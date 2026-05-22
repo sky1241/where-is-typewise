@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "last_updated": "2026-05-22",
+    "source": "typewise.app homepage + customer-stories pages",
+    "warning": "Typewise advertises '200+ deep integrations' but does not publish a full list publicly. This is a curated subset of confirmed and high-likelihood integrations from public material. A sales call should validate any specific platform a buyer requires."
+  },
+  "confirmed_native": {
+    "zendesk": {
+      "type": "native_helpdesk",
+      "evidence": "Brack.ch customer story explicitly runs Typewise on top of Zendesk",
+      "docs_hint": "https://typewise.app — search 'Zendesk'"
+    },
+    "chatgpt": {
+      "type": "llm_provider",
+      "evidence": "Homepage lists ChatGPT integration explicitly",
+      "docs_hint": "https://typewise.app"
+    },
+    "claude": {
+      "type": "llm_provider",
+      "evidence": "Homepage lists Anthropic Claude integration explicitly",
+      "docs_hint": "https://typewise.app"
+    }
+  },
+  "channels_native": {
+    "email": "native channel, all plans",
+    "chat": "native channel, all plans",
+    "whatsapp": "native channel, business-tier",
+    "social": "native channel, includes major social inboxes",
+    "voice": "on roadmap, not generally available as of 2026-05-22"
+  },
+  "high_likelihood_via_200plus_claim": {
+    "salesforce_service_cloud": {
+      "type": "helpdesk",
+      "confidence": "high",
+      "evidence": "Standard enterprise CS stack; Typewise positions as helpdesk-agnostic layer"
+    },
+    "freshdesk": {
+      "type": "helpdesk",
+      "confidence": "high",
+      "evidence": "Mentioned in Typewise blog comparison content (freshdesk-fin-typewise-comparaison)"
+    },
+    "microsoft_dynamics_365": {
+      "type": "helpdesk",
+      "confidence": "high",
+      "evidence": "Standard enterprise CRM/service stack"
+    },
+    "hubspot_service_hub": {
+      "type": "helpdesk",
+      "confidence": "medium",
+      "evidence": "Typewise's competitor-comparison content positions vs HubSpot"
+    },
+    "intercom": {
+      "type": "helpdesk",
+      "confidence": "medium",
+      "evidence": "Sales-led positioning vs Fin assumes co-existence is possible"
+    },
+    "slack": {
+      "type": "internal_messaging",
+      "confidence": "medium",
+      "evidence": "Standard for agent-facing collaboration"
+    },
+    "microsoft_teams": {
+      "type": "internal_messaging",
+      "confidence": "medium",
+      "evidence": "Standard for enterprise agent collaboration"
+    }
+  },
+  "not_supported_or_unknown": {
+    "discord": "Not advertised. Outside typical enterprise CS scope.",
+    "telegram_business": "Not advertised on homepage. Verify with sales."
+  }
+}
