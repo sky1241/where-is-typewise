@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "last_updated": "2026-05-22",
+    "source": "Public LinkedIn / Twitter / podcast pages, curated during audit. Audience numbers are public estimates and shift quickly.",
+    "warning": "Outreach must be researched and personalised. This dataset is a starting shortlist, not an auto-pilot. Topic tags use a controlled vocabulary so scoring stays deterministic."
+  },
+  "influencers": [
+    {
+      "id": "shep_hyken",
+      "name": "Shep Hyken",
+      "role": "Customer Service Speaker, NYT Bestselling Author",
+      "audience_size": 106000,
+      "primary_channel": "twitter",
+      "channels": ["twitter", "linkedin", "newsletter", "speaking"],
+      "topics_focus": ["customer_service", "loyalty", "experience", "speaking", "books"],
+      "best_outreach_channel": "twitter",
+      "url": "https://www.linkedin.com/in/shephyken/",
+      "notes": "Chief Amazement Officer. Paid keynote circuit. Best for podcast guest pitch + speaking opportunities, not direct product pitches."
+    },
+    {
+      "id": "jeanne_bliss",
+      "name": "Jeanne Bliss",
+      "role": "CXPA Co-founder, 5x Chief Customer Officer",
+      "audience_size": 24000,
+      "primary_channel": "twitter",
+      "channels": ["twitter", "linkedin", "podcast", "books"],
+      "topics_focus": ["customer_experience", "leadership", "cco_role", "books", "speaking"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/jeannebliss/",
+      "notes": "Hosts 'The Human Duct Tape Show' podcast. CCO-level reach. Best fit for an executive-narrative post on CX leadership."
+    },
+    {
+      "id": "blake_morgan",
+      "name": "Blake Morgan",
+      "role": "Customer Experience Futurist, Forbes Contributor",
+      "audience_size": 100000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "podcast", "newsletter", "forbes_column"],
+      "topics_focus": ["customer_experience", "ai", "automation", "future_of_work"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://blakemichellemorgan.com/",
+      "notes": "Hosts The Modern Customer Podcast. Best fit for an AI-in-CS angle. Responds to LinkedIn DMs with concrete customer stories attached."
+    },
+    {
+      "id": "bill_staikos",
+      "name": "Bill Staikos",
+      "role": "CX Practitioner, Be Customer Led",
+      "audience_size": 35000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "podcast", "consulting"],
+      "topics_focus": ["customer_experience", "cs_operations", "cs_leadership", "automation"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/billstaikos/",
+      "notes": "Hosts Be Customer Led podcast. Practitioner-grounded. Pitch with an operating-CS story, not vision."
+    },
+    {
+      "id": "adrian_swinscoe",
+      "name": "Adrian Swinscoe",
+      "role": "Punk CX Author, Forbes Contributor",
+      "audience_size": 28000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "twitter", "podcast", "forbes_column", "books"],
+      "topics_focus": ["customer_experience", "contrarian", "ai", "automation", "books"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/adrianswinscoe/",
+      "notes": "Hosts Punk CX podcast. UK-anchored. Loves contrarian framings — perfect for the 'augment vs replace' counter-narrative."
+    },
+    {
+      "id": "dan_gingiss",
+      "name": "Dan Gingiss",
+      "role": "Experience Maker, Author, Speaker",
+      "audience_size": 45000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "podcast", "books", "speaking"],
+      "topics_focus": ["customer_experience", "social_customer_care", "books", "speaking"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/dangingiss/",
+      "notes": "Hosts The Experience Maker podcast. Strong social-customer-care focus. Pitch with a social-channel CS story."
+    },
+    {
+      "id": "annette_franz",
+      "name": "Annette Franz",
+      "role": "CX Journey Mapper, CX Journey Inc Founder",
+      "audience_size": 30000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "newsletter", "books", "speaking"],
+      "topics_focus": ["customer_experience", "journey_mapping", "voice_of_customer", "books"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/annettefranz/",
+      "notes": "VoC + journey-mapping authority. Pitch when the story has a customer-journey data spine."
+    },
+    {
+      "id": "stacy_sherman",
+      "name": "Stacy Sherman",
+      "role": "Doing CX Right Founder, CX Strategist",
+      "audience_size": 25000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "podcast", "newsletter", "consulting"],
+      "topics_focus": ["customer_experience", "employee_experience", "cs_leadership", "speaking"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/stacysherman/",
+      "notes": "Hosts Doing CX Right podcast. Employee-experience angle is unusual — useful if the story has an agent-side metric."
+    },
+    {
+      "id": "justin_robbins",
+      "name": "Justin Robbins",
+      "role": "Customer Experience Analyst, Speaker",
+      "audience_size": 18000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "speaking", "consulting"],
+      "topics_focus": ["contact_center", "cs_operations", "automation", "industry_analyst"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/justinjrobbins/",
+      "notes": "Contact-centre-industry analyst. Pitch with operational metrics (AHT, deflection, CSAT)."
+    },
+    {
+      "id": "nate_brown",
+      "name": "Nate Brown",
+      "role": "CX Accelerator Co-founder",
+      "audience_size": 15000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "community", "speaking"],
+      "topics_focus": ["customer_experience", "community", "cs_leadership", "automation"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/natebrownci/",
+      "notes": "Co-founder of the CX Accelerator Slack community — one of the canonical CS-buyer pre-qualification spaces. High-leverage."
+    },
+    {
+      "id": "jeannie_walters",
+      "name": "Jeannie Walters",
+      "role": "Experience Investigators CEO",
+      "audience_size": 22000,
+      "primary_channel": "linkedin",
+      "channels": ["linkedin", "podcast", "consulting"],
+      "topics_focus": ["customer_experience", "cx_strategy", "speaking", "cs_leadership"],
+      "best_outreach_channel": "linkedin",
+      "url": "https://www.linkedin.com/in/jeanniewalters/",
+      "notes": "Hosts the Experience Action podcast. Mid-market focus. Pitch when story has a mid-market customer."
+    },
+    {
+      "id": "sarah_guo",
+      "name": "Sarah Guo",
+      "role": "Conviction Partners Founder, No Priors Co-host",
+      "audience_size": 130000,
+      "primary_channel": "twitter",
+      "channels": ["twitter", "linkedin", "podcast", "newsletter"],
+      "topics_focus": ["ai", "ai_agents", "venture_capital", "deep_tech", "automation"],
+      "best_outreach_channel": "twitter",
+      "url": "https://x.com/saranormous",
+      "notes": "VC-side reach. Best for AI/agent positioning, not CX-specific posts. Pitch via X DM with a concrete agent-architecture point."
+    }
+  ]
+}
