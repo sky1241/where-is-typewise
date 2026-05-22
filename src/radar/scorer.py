@@ -11,11 +11,33 @@ so Claude always returns parseable JSON.
 
 from __future__ import annotations
 
+import logging
+import random
+import time
 from typing import Any, Iterable, Iterator
 
-from anthropic import Anthropic
+from anthropic import (
+    Anthropic,
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    InternalServerError,
+    RateLimitError,
+)
 
 _DEFAULT_MODEL = "claude-haiku-4-5"
+_MAX_RETRIES = 5
+_BASE_BACKOFF_SECONDS = 2.0
+_logger = logging.getLogger("radar.scorer")
+
+# Exceptions Anthropic emits for transient infra problems — worth retrying.
+# Anything else (auth, bad request, …) must surface immediately.
+_RETRIABLE_EXCEPTIONS = (
+    APIConnectionError,
+    APITimeoutError,
+    InternalServerError,  # 500, 502, 503, 504
+    RateLimitError,        # 429
+)
 
 _INTENT_VALUES = ["research", "comparison", "complaint", "shopping", "irrelevant"]
 
@@ -158,7 +180,8 @@ def score_thread(
     """
     client = client or Anthropic()
     comps = competitors if competitors is not None else list(_DEFAULT_COMPETITORS)
-    response = client.messages.create(
+
+    request_kwargs: dict[str, Any] = dict(
         model=model,
         max_tokens=max_tokens,
         system=[
@@ -172,7 +195,70 @@ def score_thread(
         tool_choice={"type": "tool", "name": "score_thread"},
         messages=[{"role": "user", "content": _user_prompt(thread)}],
     )
+
+    response = _call_with_retry(client.messages.create, request_kwargs)
     return _normalize(_extract_tool_input(response))
+
+
+def _call_with_retry(api_call, kwargs: dict[str, Any]) -> Any:
+    """Invoke an Anthropic API call with exponential-backoff retry on transient errors.
+
+    Retries APIConnectionError, APITimeoutError, InternalServerError (5xx),
+    and RateLimitError (429). Surfaces other exceptions immediately so an auth
+    or schema bug fails fast rather than retrying pointlessly.
+    """
+    last_exc: Exception | None = None
+    for attempt in range(_MAX_RETRIES):
+        try:
+            return api_call(**kwargs)
+        except _RETRIABLE_EXCEPTIONS as exc:
+            last_exc = exc
+            if attempt == _MAX_RETRIES - 1:
+                break
+            # Honor Retry-After when present, else exponential backoff with jitter.
+            retry_after = _extract_retry_after(exc)
+            if retry_after is not None:
+                wait = retry_after
+            else:
+                wait = _BASE_BACKOFF_SECONDS * (2 ** attempt) + random.uniform(0, 0.5)
+            _logger.warning(
+                "Anthropic transient %s on attempt %d/%d — sleeping %.1fs before retry",
+                type(exc).__name__, attempt + 1, _MAX_RETRIES, wait,
+            )
+            time.sleep(wait)
+        except APIStatusError as exc:
+            # 529 Overloaded isn't a dedicated class in the SDK — check status manually.
+            if getattr(exc, "status_code", None) in (529, 503):
+                last_exc = exc
+                if attempt == _MAX_RETRIES - 1:
+                    break
+                wait = _BASE_BACKOFF_SECONDS * (2 ** attempt) + random.uniform(0, 0.5)
+                _logger.warning(
+                    "Anthropic overload (HTTP %s) on attempt %d/%d — sleeping %.1fs",
+                    exc.status_code, attempt + 1, _MAX_RETRIES, wait,
+                )
+                time.sleep(wait)
+                continue
+            raise
+    assert last_exc is not None
+    raise last_exc
+
+
+def _extract_retry_after(exc: Exception) -> float | None:
+    """Pull a Retry-After header (seconds) from an Anthropic exception, if present."""
+    response = getattr(exc, "response", None)
+    if response is None:
+        return None
+    headers = getattr(response, "headers", None)
+    if headers is None:
+        return None
+    raw = headers.get("retry-after") or headers.get("Retry-After")
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
 
 
 def score_many(
