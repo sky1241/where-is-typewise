@@ -20,13 +20,13 @@ def memory_db_with_demo():
 
 # --- helpers ---
 
-def test_format_competitors_none_returns_dash():
-    assert app._format_competitors(None) == "—"
-    assert app._format_competitors([]) == "—"
+def test_format_competitors_none_returns_none():
+    assert app._format_competitors(None) is None
+    assert app._format_competitors([]) is None
 
 
-def test_format_competitors_list_joins_with_comma():
-    assert app._format_competitors(["Fin", "Decagon"]) == "Fin, Decagon"
+def test_format_competitors_list_returns_list():
+    assert app._format_competitors(["Fin", "Decagon"]) == ["Fin", "Decagon"]
 
 
 def test_format_age_handles_none_gracefully():
