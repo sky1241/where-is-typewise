@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from mcp.server.fastmcp import FastMCP
 
+from src.mcp_server.tools import case_study as case_study_mod
 from src.mcp_server.tools import compare as compare_mod
 from src.mcp_server.tools import pricing as pricing_mod
 
@@ -50,6 +51,29 @@ def typewise_pricing_calculator(
         monthly_tickets=monthly_tickets,
         resolution_rate=resolution_rate,
         human_cost_per_ticket_usd=human_cost_per_ticket_usd,
+    )
+
+
+@mcp.tool()
+def typewise_find_case_study(
+    industry: str,
+    company_size: str | None = None,
+    region: str | None = None,
+) -> dict:
+    """Find the Typewise customer story closest to a prospect's profile.
+
+    Args:
+        industry: Prospect's industry, free-form (e.g. "retail", "logistics", "saas", "energy").
+        company_size: Optional sizing hint ("smb", "mid_market", "scaleup", "enterprise").
+        region: Optional region hint ("DACH", "EU", "global", "Switzerland", etc.).
+
+    Returns:
+        Dict with best_match, up to two alternates, and reasoning for the pick.
+    """
+    return case_study_mod.find(
+        industry=industry,
+        company_size=company_size,
+        region=region,
     )
 
 
