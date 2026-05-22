@@ -12,7 +12,10 @@ from mcp.server.fastmcp import FastMCP
 
 from src.mcp_server.tools import case_study as case_study_mod
 from src.mcp_server.tools import compare as compare_mod
+from src.mcp_server.tools import influencer_finder as influencer_finder_mod
 from src.mcp_server.tools import integrations as integrations_mod
+from src.mcp_server.tools import linkedin_post as linkedin_post_mod
+from src.mcp_server.tools import podcast_pitch as podcast_pitch_mod
 from src.mcp_server.tools import pricing as pricing_mod
 
 mcp = FastMCP("typewise-mcp")
@@ -90,6 +93,59 @@ def typewise_integration_check(platform: str) -> dict:
         evidence, and a next-step recommendation honest about confidence level.
     """
     return integrations_mod.check(platform)
+
+
+@mcp.tool()
+def typewise_podcast_pitch(podcast_name: str) -> dict:
+    """Draft a guest-pitch package for a named CX/CS-AI podcast.
+
+    Args:
+        podcast_name: Free-form podcast name (case + spacing tolerant). Aliases
+            resolve common host names too (e.g. "Sarah Guo" → "No Priors").
+
+    Returns:
+        Dict with podcast metadata, a 3-paragraph recommended_pitch tuned to the
+        host's known angle, four anchor talking_points, the next concrete step
+        (contact channel), and an evidence URL pointing at a recent episode.
+        Unknown names return the curated index of 10 podcasts.
+    """
+    return podcast_pitch_mod.pitch(podcast_name)
+
+
+@mcp.tool()
+def typewise_linkedin_post(topic: str) -> dict:
+    """Assemble a LinkedIn-post template tuned to a growth topic.
+
+    Args:
+        topic: Free-form topic name. Aliases resolve common variants
+            (e.g. "gdpr" → "eu_data_residency"; "vs sierra" → "augment_vs_replace").
+
+    Returns:
+        Dict with the assembled draft_post (hook + insight + cta), length in
+        chars (kept in the 600–1500 LinkedIn sweet spot), 3–5 hashtags, tone
+        notes, the target audience persona, and the LinkedIn pattern this
+        template was inspired by. Unknown topics return the curated list of 6.
+    """
+    return linkedin_post_mod.generate(topic)
+
+
+@mcp.tool()
+def typewise_influencer_finder(topic: str, max_results: int = 3) -> dict:
+    """Surface the best-matched CX/AI influencer(s) for a given growth topic.
+
+    Args:
+        topic: Free-form topic (e.g. "ai agents", "CX leadership", "community").
+            Aliases resolve to a controlled topic vocabulary so ranking is
+            deterministic across calls.
+        max_results: Cap on the number of ranked matches (default 3).
+
+    Returns:
+        Dict with up to `max_results` ranked best_matches (each enriched with a
+        per-match match_reason), the query tags it resolved to, and reasoning
+        that explains the ranking. Unknown topics fall back to the highest-
+        audience influencer with the fallback honestly flagged in the reasoning.
+    """
+    return influencer_finder_mod.find(topic, max_results=max_results)
 
 
 def main() -> None:

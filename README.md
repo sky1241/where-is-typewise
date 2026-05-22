@@ -21,7 +21,7 @@ Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.
 2. **Scores** each thread with Claude Haiku 4.5 (tool-use, prompt-cached system prompt): buyer intent, competitors mentioned, whether Typewise was mentioned, relevance score 0–1.
 3. **Drafts** a contextual human-style reply that Typewise's team could post — never auto-posted, always a suggestion for human review.
 4. **Surfaces** everything on a public Streamlit dashboard with the count that matters: *threads this week where Typewise should have been in the conversation*.
-5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) so any dev can evaluate the product from inside Claude Desktop or Cursor — four tools (`compare`, `pricing`, `case_study`, `integration_check`).
+5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) so any dev — or growth operator — can evaluate AND act on Typewise from inside Claude Desktop or Cursor. Seven tools: a buyer-evaluation surface (`compare`, `pricing`, `case_study`, `integration_check`) and a **Growth Playbook** surface (`podcast_pitch`, `linkedin_post`, `influencer_finder`). That second surface is the *"documented, automated Growth Playbook"* the job posting names — shipped as code, not a deck.
 
 ## Why this exists
 
@@ -47,21 +47,30 @@ cp .env.example .env  # fill in REDDIT_CLIENT_ID, REDDIT_SECRET, ANTHROPIC_API_K
 python -m src.mcp_server.server
 ```
 
-This boots a local MCP server exposing four tools:
+This boots a local MCP server exposing **seven tools** — a buyer-evaluation surface (`compare`, `pricing`, `case_study`, `integration_check`) and a **Growth Playbook** surface (`podcast_pitch`, `linkedin_post`, `influencer_finder`):
 
-- `typewise_compare(competitor)` — structured comparison vs Fin, Decagon, Sierra, Zendesk AI, with the recommended one-sentence positioning for that specific matchup
+**Buyer evaluation**
+- `typewise_compare(competitor)` — structured comparison vs Fin, Decagon, Sierra, Zendesk AI, with the recommended one-sentence positioning for that matchup
 - `typewise_pricing_calculator(monthly_tickets, resolution_rate=0.70, human_cost_per_ticket_usd=6.0)` — cost + year-one ROI at the public $1/resolution price
 - `typewise_find_case_study(industry, company_size, region)` — the closest-matching Typewise customer story plus up to two alternates and the reasoning
-- `typewise_integration_check(platform)` — does Typewise integrate with X? Returns an honest confidence tier (confirmed / native_channel / high_likelihood / unlikely / unknown), never a fake yes
+- `typewise_integration_check(platform)` — does Typewise integrate with X? Honest confidence tier (confirmed / native_channel / high_likelihood / unlikely / unknown), never a fake yes
+
+**Growth Playbook**
+- `typewise_podcast_pitch(podcast_name)` — guest-pitch draft for any of 10 curated CX/CS-AI podcasts (No Priors, The CX Cast, Modern Customer, Be Customer Led, Punk CX, Support Driven, 20VC, SaaStr, Lenny, Acquired) — 3-paragraph pitch + 4 talking points + contact_hint + evidence URL
+- `typewise_linkedin_post(topic)` — assembled LinkedIn-post template (hook + insight + CTA) for 6 growth topics (augment_vs_replace, eu_data_residency, dach_case_study, agent_vs_chatbot, multi_agent_orchestration, helpdesk_layer_not_replacement), each kept in the 600-1500 char sweet spot with 3-5 hashtags
+- `typewise_influencer_finder(topic)` — ranked CX/AI influencer matches (12 curated: Shep Hyken, Jeanne Bliss, Blake Morgan, Bill Staikos, Adrian Swinscoe, Sarah Guo, …) with tag-overlap scoring and per-match reasoning
 
 Verified via the MCP runtime, not just Python imports (see `tests/test_mcp_integration.py`):
 
 ```text
-Tool count: 4
+7 tools live:
   - typewise_compare(['competitor'])
   - typewise_pricing_calculator(['monthly_tickets', 'resolution_rate', 'human_cost_per_ticket_usd'])
   - typewise_find_case_study(['industry', 'company_size', 'region'])
   - typewise_integration_check(['platform'])
+  - typewise_podcast_pitch(['podcast_name'])
+  - typewise_linkedin_post(['topic'])
+  - typewise_influencer_finder(['topic', 'max_results'])
 ```
 
 ### Wire into Claude Desktop

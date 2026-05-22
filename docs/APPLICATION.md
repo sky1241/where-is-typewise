@@ -16,7 +16,7 @@ You asked for "something built." Here are three URLs:
 
 ### Why this composition won't repeat what 20 other candidates send you
 
-1. **MCP server.** You pushed [`mcp-chaos-rig`](https://github.com/Typewise) to your GitHub two days before this job posting opened. I built `typewise-mcp` to plug Typewise into any dev's Claude Desktop in 30 seconds — `typewise_compare`, `typewise_pricing_calculator`, `typewise_find_case_study`, `typewise_integration_check`. No other candidate prompting an LLM will spot this signal in time.
+1. **MCP server with 7 tools.** You pushed [`mcp-chaos-rig`](https://github.com/Typewise) to your GitHub two days before this job posting opened. I built `typewise-mcp` to plug Typewise into any dev's — or growth operator's — Claude Desktop in 30 seconds. Four buyer-evaluation tools (`typewise_compare`, `typewise_pricing_calculator`, `typewise_find_case_study`, `typewise_integration_check`) and three Growth Playbook tools (`typewise_podcast_pitch` for 10 curated CX podcasts, `typewise_linkedin_post` for 6 growth topics, `typewise_influencer_finder` for 12 CX influencers). The second surface is the *"documented, automated Growth Playbook"* the job posting names — shipped as code, not a deck. No other candidate prompting an LLM will spot the MCP signal in time.
 
 2. **Radar.** Solves the verbatim brief: *"make CS buyers find Typewise through any creative, non-paid, AI-powered means."* Reddit + HN + Claude scorer + draft reply per thread, never auto-posted.
 
