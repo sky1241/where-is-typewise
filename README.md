@@ -24,13 +24,44 @@ This repo is one such means.
 ```bash
 git clone https://github.com/sky1241/where-is-typewise
 cd where-is-typewise
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env  # fill in REDDIT_CLIENT_ID, REDDIT_SECRET, ANTHROPIC_API_KEY
-python -m src.scraper_reddit
-python -m src.scraper_hn
-python -m src.scorer
-streamlit run src/app.py
 ```
+
+### Run the MCP server (plat principal)
+
+```bash
+python -m src.mcp_server.server
+```
+
+This boots a local MCP server exposing three tools (and counting):
+
+- `typewise_compare(competitor)` — structured comparison vs Fin, Decagon, Sierra, Zendesk AI
+- `typewise_pricing_calculator(monthly_tickets)` — cost + ROI at $1/resolution
+- `typewise_find_case_study(industry, company_size, region)` — closest matching Typewise customer story
+
+### Wire into Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "typewise": {
+      "command": "python",
+      "args": ["-m", "src.mcp_server.server"],
+      "cwd": "/absolute/path/to/where-is-typewise"
+    }
+  }
+}
+```
+
+Restart Claude Desktop. Then ask: *"Compare Typewise with Fin for a 30k-ticket-per-month EU retailer, and recommend the closest case study."* — Claude will fire `typewise_compare`, `typewise_pricing_calculator`, and `typewise_find_case_study` in one turn.
+
+### Run the radar (bonus)
+
+*Coming in phase 2 — see [BATTLE_PLAN.md](BATTLE_PLAN.md).*
 
 ## Status
 
