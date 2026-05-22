@@ -88,9 +88,23 @@ FORGE REPORT — PASS
 Tests: 41 | Passed: 41 | Failed: 0 | Duration: 3.6s
 ```
 
-### Run the radar (bonus)
+### Run the live dashboard (Streamlit)
 
-*Coming in phase 2 — see [BATTLE_PLAN.md](BATTLE_PLAN.md).*
+```bash
+python -m src.seed_demo                # load 8 hand-crafted demo threads
+streamlit run streamlit_app.py         # launch the dashboard at http://localhost:8501
+```
+
+> ⚠️ Always run via `streamlit_app.py` at the repo root, never `streamlit run src/app.py` directly — see [BUGS.md](BUGS.md) BUG-001 for why.
+
+![Dashboard screenshot — 5 threads where Typewise should have been mentioned, top thread in German (DACH moat visible), Claude-drafted replies ready for human review](docs/dashboard.png)
+
+The dashboard shows, in real time:
+
+- **Headline metric** — threads this week where Typewise should have been mentioned but wasn't
+- **Coverage gap** — vs threads where Typewise *was* mentioned
+- **Filters** — source (Reddit / HN / DACH), locale (en / de / fr / it), buyer intent (research / comparison / complaint / shopping), minimum relevance score
+- **Per-thread expander** — URL, author, age, competitors mentioned, body, and the Claude-drafted reply ready for a human reviewer to send
 
 ## Status
 
