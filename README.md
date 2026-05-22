@@ -35,11 +35,22 @@ cp .env.example .env  # fill in REDDIT_CLIENT_ID, REDDIT_SECRET, ANTHROPIC_API_K
 python -m src.mcp_server.server
 ```
 
-This boots a local MCP server exposing three tools (and counting):
+This boots a local MCP server exposing four tools:
 
-- `typewise_compare(competitor)` — structured comparison vs Fin, Decagon, Sierra, Zendesk AI
-- `typewise_pricing_calculator(monthly_tickets)` — cost + ROI at $1/resolution
-- `typewise_find_case_study(industry, company_size, region)` — closest matching Typewise customer story
+- `typewise_compare(competitor)` — structured comparison vs Fin, Decagon, Sierra, Zendesk AI, with the recommended one-sentence positioning for that specific matchup
+- `typewise_pricing_calculator(monthly_tickets, resolution_rate=0.70, human_cost_per_ticket_usd=6.0)` — cost + year-one ROI at the public $1/resolution price
+- `typewise_find_case_study(industry, company_size, region)` — the closest-matching Typewise customer story plus up to two alternates and the reasoning
+- `typewise_integration_check(platform)` — does Typewise integrate with X? Returns an honest confidence tier (confirmed / native_channel / high_likelihood / unlikely / unknown), never a fake yes
+
+Verified via the MCP runtime, not just Python imports (see `tests/test_mcp_integration.py`):
+
+```text
+Tool count: 4
+  - typewise_compare(['competitor'])
+  - typewise_pricing_calculator(['monthly_tickets', 'resolution_rate', 'human_cost_per_ticket_usd'])
+  - typewise_find_case_study(['industry', 'company_size', 'region'])
+  - typewise_integration_check(['platform'])
+```
 
 ### Wire into Claude Desktop
 
@@ -57,7 +68,25 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 }
 ```
 
-Restart Claude Desktop. Then ask: *"Compare Typewise with Fin for a 30k-ticket-per-month EU retailer, and recommend the closest case study."* — Claude will fire `typewise_compare`, `typewise_pricing_calculator`, and `typewise_find_case_study` in one turn.
+Restart Claude Desktop. Then ask:
+
+> *"I'm evaluating Typewise for a 30k-ticket-per-month DACH e-commerce retailer running Zendesk. Compare them with Fin, estimate ROI, find me the closest case study, and confirm Zendesk integration."*
+
+Claude will fire `typewise_compare`, `typewise_pricing_calculator`, `typewise_find_case_study`, and `typewise_integration_check` in a single turn and synthesize a buyer-ready brief.
+
+## Tests
+
+```bash
+python -m pytest tests/ -v
+forge          # regression check vs baseline (forge-shield, optional)
+```
+
+Current state: **41 tests, all green** (34 unit tests + 7 MCP protocol-level integration tests). Latest forge run:
+
+```text
+FORGE REPORT — PASS
+Tests: 41 | Passed: 41 | Failed: 0 | Duration: 3.6s
+```
 
 ### Run the radar (bonus)
 
