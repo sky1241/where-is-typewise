@@ -43,6 +43,14 @@ def tmp_db(tmp_path: Path) -> Path:
     return tmp_path / "radar.db"
 
 
+@pytest.fixture(autouse=True)
+def _no_real_network(monkeypatch):
+    """Default-mock the network-touching calls so tests can't accidentally hit the internet."""
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [])
+    monkeypatch.setattr(runner.dach, "fetch_all", lambda *_a, **_kw: [])
+    monkeypatch.setattr(runner.locale_tagger, "tag_threads_in_db", lambda *_a, **_kw: 0)
+
+
 def test_load_config_parses_yaml(tmp_path: Path):
     cfg_path = tmp_path / "config.yaml"
     cfg_path.write_text("keywords:\n  - foo\nreddit:\n  subreddits: [bar]\n", encoding="utf-8")
@@ -60,49 +68,110 @@ def test_load_config_rejects_non_mapping(tmp_path: Path):
         runner.load_config(cfg_path)
 
 
-def test_run_persists_hn_and_reddit_when_creds_available(monkeypatch, tmp_db):
+def test_run_persists_all_three_sources(monkeypatch, tmp_db):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key")
-    hn_threads = [_thread("hn:1"), _thread("hn:2")]
-    reddit_threads = [_thread("reddit:a", source="reddit")]
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1"), _thread("hn:2")])
+    monkeypatch.setattr(runner.reddit, "client_from_env", lambda: MagicMock())
+    monkeypatch.setattr(runner.reddit, "scrape_many", lambda *_a, **_kw: [_thread("reddit:a", source="reddit")])
+    monkeypatch.setattr(runner.dach, "fetch_all", lambda *_a, **_kw: [_thread("dach:t3n:abc", source="dach")])
+    monkeypatch.setattr(runner.locale_tagger, "tag_threads_in_db", lambda *_a, **_kw: 2)
 
-    with patch.object(runner.hackernews, "search_many", return_value=hn_threads) as hn_mock, \
-         patch.object(runner.reddit, "client_from_env", return_value=MagicMock()), \
-         patch.object(runner.reddit, "scrape_many", return_value=reddit_threads), \
-         patch.object(runner.scorer, "score_many", return_value=iter([])) as score_mock, \
+    with patch.object(runner.scorer, "score_many", return_value=iter([])) as score_mock, \
          patch.object(runner, "Anthropic", return_value=MagicMock()):
         summary = runner.run(_minimal_config(), db_path=tmp_db)
 
     assert summary["fetched_hn"] == 2
     assert summary["fetched_reddit"] == 1
-    assert summary["persisted"] == 3
-    hn_mock.assert_called_once()
-    score_mock.assert_called_once()  # scoring attempted because key was set
+    assert summary["fetched_dach"] == 1
+    assert summary["persisted"] == 4
+    assert summary["locale_tagged"] == 2
+    score_mock.assert_called_once()
 
     with store.connect(tmp_db) as conn:
         rows = store.query_threads(conn, limit=10)
-        assert {r["id"] for r in rows} == {"hn:1", "hn:2", "reddit:a"}
+        assert {r["id"] for r in rows} == {"hn:1", "hn:2", "reddit:a", "dach:t3n:abc"}
 
 
 def test_run_skips_reddit_when_creds_missing(monkeypatch, tmp_db):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
+    monkeypatch.setattr(
+        runner.reddit, "client_from_env",
+        MagicMock(side_effect=runner.reddit.RedditCredsMissing("no creds")),
+    )
 
-    with patch.object(runner.hackernews, "search_many", return_value=[_thread("hn:1")]), \
-         patch.object(runner.reddit, "client_from_env",
-                      side_effect=runner.reddit.RedditCredsMissing("no creds")), \
-         patch.object(runner.scorer, "score_many") as score_mock:
+    with patch.object(runner.scorer, "score_many") as score_mock:
         summary = runner.run(_minimal_config(), db_path=tmp_db)
 
     assert summary["fetched_reddit"] == 0
     assert summary["fetched_hn"] == 1
     assert summary["persisted"] == 1
-    score_mock.assert_not_called()  # no anthropic key
+    score_mock.assert_not_called()
+
+
+def test_dach_keywords_override_disables_filter(monkeypatch, tmp_db):
+    """Explicit `dach: {keywords: []}` in config must override global keywords -> empty filter."""
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    captured = {}
+
+    def fake_fetch_all(*, feeds=None, keywords=None, client=None):
+        captured["keywords"] = keywords
+        return []
+
+    monkeypatch.setattr(runner.dach, "fetch_all", fake_fetch_all)
+
+    cfg = _minimal_config()
+    cfg["dach"] = {"keywords": []}  # explicit empty list
+    runner.run(cfg, db_path=tmp_db, use_reddit=False)
+
+    assert captured["keywords"] == []  # not the global ["AI customer service"]
+
+
+def test_dach_falls_back_to_global_keywords_when_no_override(monkeypatch, tmp_db):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    captured = {}
+
+    def fake_fetch_all(*, feeds=None, keywords=None, client=None):
+        captured["keywords"] = keywords
+        return []
+
+    monkeypatch.setattr(runner.dach, "fetch_all", fake_fetch_all)
+
+    cfg = _minimal_config()  # no `dach` key
+    runner.run(cfg, db_path=tmp_db, use_reddit=False)
+
+    assert captured["keywords"] == ["AI customer service"]
+
+
+def test_run_no_dach_flag_skips_dach(monkeypatch, tmp_db):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
+    monkeypatch.setattr(runner.dach, "fetch_all",
+                        MagicMock(side_effect=AssertionError("dach must not be called")))
+
+    summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_dach=False)
+
+    assert summary["fetched_dach"] == 0
+    assert summary["persisted"] == 1
+
+
+def test_run_no_tag_locale_skips_langdetect(monkeypatch, tmp_db):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
+    monkeypatch.setattr(runner.locale_tagger, "tag_threads_in_db",
+                        MagicMock(side_effect=AssertionError("tagger must not be called")))
+
+    summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_dach=False, tag_locale=False)
+
+    assert summary["locale_tagged"] == 0
 
 
 def test_run_skips_scoring_when_no_anthropic_key(monkeypatch, tmp_db):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    with patch.object(runner.hackernews, "search_many", return_value=[_thread("hn:1")]), \
-         patch.object(runner.scorer, "score_many") as score_mock:
-        summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False)
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
+
+    with patch.object(runner.scorer, "score_many") as score_mock:
+        summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_dach=False)
 
     assert summary["scored"] == 0
     score_mock.assert_not_called()
@@ -110,9 +179,11 @@ def test_run_skips_scoring_when_no_anthropic_key(monkeypatch, tmp_db):
 
 def test_run_use_scoring_false_overrides_even_with_key(monkeypatch, tmp_db):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key")
-    with patch.object(runner.hackernews, "search_many", return_value=[_thread("hn:1")]), \
-         patch.object(runner.scorer, "score_many") as score_mock:
-        summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_scoring=False)
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
+
+    with patch.object(runner.scorer, "score_many") as score_mock:
+        summary = runner.run(_minimal_config(), db_path=tmp_db,
+                             use_reddit=False, use_dach=False, use_scoring=False)
 
     assert summary["scored"] == 0
     score_mock.assert_not_called()
@@ -121,6 +192,7 @@ def test_run_use_scoring_false_overrides_even_with_key(monkeypatch, tmp_db):
 def test_run_scoring_writes_results_to_db(monkeypatch, tmp_db):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key")
     threads = [_thread("hn:1"), _thread("hn:2")]
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: threads)
     scorings = [
         (threads[0], {"intent": "comparison", "competitors_mentioned": ["Fin"],
                       "typewise_mentioned": False, "relevance_score": 0.82, "draft_reply": "hi"}),
@@ -128,10 +200,9 @@ def test_run_scoring_writes_results_to_db(monkeypatch, tmp_db):
                       "typewise_mentioned": False, "relevance_score": 0.3, "draft_reply": ""}),
     ]
 
-    with patch.object(runner.hackernews, "search_many", return_value=threads), \
-         patch.object(runner.scorer, "score_many", return_value=iter(scorings)), \
+    with patch.object(runner.scorer, "score_many", return_value=iter(scorings)), \
          patch.object(runner, "Anthropic", return_value=MagicMock()):
-        summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False)
+        summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_dach=False)
 
     assert summary["scored"] == 2
 
@@ -149,12 +220,18 @@ def test_main_cli_returns_zero_and_prints_summary(monkeypatch, tmp_db, capsys, t
         "keywords: [x]\nhackernews: {max_results: 5}\nreddit: {subreddits: [], posts_per_sub: 5}\n",
         encoding="utf-8",
     )
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
 
-    with patch.object(runner.hackernews, "search_many", return_value=[_thread("hn:1")]):
-        rc = runner.main(["--config", str(cfg_path), "--db", str(tmp_db), "--no-reddit", "--no-scoring"])
+    rc = runner.main([
+        "--config", str(cfg_path),
+        "--db", str(tmp_db),
+        "--no-reddit", "--no-dach", "--no-locale-tag", "--no-scoring",
+    ])
 
     assert rc == 0
     out = capsys.readouterr().out
     assert "HN=1" in out
+    assert "DACH=0" in out
     assert "persisted=1" in out
+    assert "locale_tagged=0" in out
     assert "scored=0" in out
