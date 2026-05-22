@@ -1,35 +1,33 @@
 # where-is-typewise
 
 [![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
-[![Tests](https://img.shields.io/badge/tests-125%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
+[![Tests](https://img.shields.io/badge/tests-167%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
 
-A live radar that scans Reddit, Hacker News, and DACH RSS feeds for conversations where customer-service leaders are evaluating AI tools — and surfaces every thread where Typewise should have appeared in the discussion but didn't.
+A live radar that scans Hacker News, Reddit, and DACH RSS feeds for conversations where customer-service leaders are evaluating AI tools — and surfaces every thread where Typewise should have appeared in the discussion but didn't.
 
-Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.ycombinator.com/companies/typewise/jobs/HmCzfBK-ai-growth-engineer) role. Not a deck. A working system.
+Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.ycombinator.com/companies/typewise/jobs/HmCzfBK-ai-growth-engineer) role.
 
 ## 🔗 Live demo
 
-**[where-is-typewise.streamlit.app](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)** — the dashboard running on real seed data, with one click required to evaluate.
+**[where-is-typewise.streamlit.app](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)** — click to evaluate.
 
-![Dashboard screenshot — five high-relevance threads this week with no Typewise mention; the top one is a German DACH retail post at score 0.94, with a Claude-drafted reply ready for human review](docs/dashboard.png)
+![Dashboard screenshot showing five high-relevance buyer-conversation threads with no Typewise mention, expandable per-thread with Claude-drafted replies ready for human review](docs/dashboard.png)
 
 ## What it does
 
-1. **Scrapes** Reddit (`r/CustomerSuccess`, `r/SaaS`, `r/CustomerService`, `r/ExperiencedDevs`), Hacker News (Algolia API), and DACH RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …).
-2. **Scores** each thread with Claude Haiku 4.5 (tool-use, prompt-cached system prompt): buyer intent, competitors mentioned, whether Typewise was mentioned, relevance score 0–1.
-3. **Drafts** a contextual human-style reply that Typewise's team could post — never auto-posted, always a suggestion for human review.
-4. **Surfaces** everything on a public Streamlit dashboard with the count that matters: *threads this week where Typewise should have been in the conversation*.
-5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) so any dev — or growth operator — can evaluate AND act on Typewise from inside Claude Desktop or Cursor. Seven tools: a buyer-evaluation surface (`compare`, `pricing`, `case_study`, `integration_check`) and a **Growth Playbook** surface (`podcast_pitch`, `linkedin_post`, `influencer_finder`). That second surface is the *"documented, automated Growth Playbook"* the job posting names — shipped as code, not a deck.
+1. **Scrapes** Hacker News (Algolia API, no auth), Reddit (PRAW, optional), and DACH RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …).
+2. **Scores** each thread with Claude Haiku 4.5 — buyer intent (research / comparison / complaint / shopping / irrelevant), competitors mentioned, whether Typewise was mentioned, relevance 0–1.
+3. **Drafts** a contextual human-style reply per thread — a suggestion for human review, never auto-posted.
+4. **Surfaces** everything on a public Streamlit dashboard with filters by source, locale, intent, and minimum relevance.
+5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) (seven tools — see below) so any dev or growth operator can evaluate AND act on Typewise from inside Claude Desktop or Cursor.
 
 ## Why this exists
 
-Today, when a CS leader types "best AI customer service platform" into Google, they find Intercom Fin (2,900+ G2 reviews) and Zendesk. They don't find Typewise (29 G2 reviews, 0 Reddit mentions indexed, last HN post in 2020 on the old keyboard product).
+When a CS leader types *"best AI customer service platform"* into Google today, they find Intercom Fin (2 900+ G2 reviews) and Zendesk. They don't find Typewise (29 G2 reviews, no Reddit mentions indexed, last Hacker News post in 2020 on the old keyboard product).
 
-The Typewise job posting puts it plainly: *"make CS buyers find Typewise through any creative, non-paid, AI-powered means that work."*
-
-This repo is one such means.
+The Typewise job posting puts it plainly: *"make CS buyers find Typewise through any creative, non-paid, AI-powered means that work."* This repo is one such means.
 
 ## Quickstart
 
@@ -37,45 +35,41 @@ This repo is one such means.
 git clone https://github.com/sky1241/where-is-typewise
 cd where-is-typewise
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env  # fill in REDDIT_CLIENT_ID, REDDIT_SECRET, ANTHROPIC_API_KEY
+pip install -r requirements-dev.txt
+cp .env.example .env   # add ANTHROPIC_API_KEY; REDDIT_* are optional
+streamlit run streamlit_app.py
 ```
 
-### Run the MCP server (plat principal)
+The dashboard boots on the seeded SQLite DB shipped with the repo. To refresh with live data, run the radar:
+
+```bash
+python -m src.radar.runner --db data/radar.db
+```
+
+(Without `REDDIT_CLIENT_ID` / `REDDIT_SECRET` the Reddit step is skipped — Hacker News + DACH still run. Without `ANTHROPIC_API_KEY` the scoring is skipped — threads are persisted unscored.)
+
+## MCP server — 7 tools
+
+Boots a local MCP server that exposes Typewise to Claude Desktop, Cursor, or any MCP client.
+
+**Buyer evaluation surface**
+- `typewise_compare(competitor)` — structured comparison vs Fin / Decagon / Sierra / Zendesk AI, with the recommended one-sentence positioning for that matchup
+- `typewise_pricing_calculator(monthly_tickets)` — cost + year-one ROI at the public $1/resolution price
+- `typewise_find_case_study(industry, company_size, region)` — closest-matching customer story (Brack.ch, DPD, Galaxus, …) plus alternates and reasoning
+- `typewise_integration_check(platform)` — honest confidence tier on whether Typewise integrates with a named platform (confirmed / native_channel / high_likelihood / unlikely / unknown)
+
+**Growth Playbook surface**
+- `typewise_podcast_pitch(podcast_name)` — guest-pitch draft for any of 10 curated CX / CS-AI podcasts (No Priors, The CX Cast, Modern Customer, Be Customer Led, Punk CX, Support Driven, 20VC, SaaStr, Lenny, Acquired)
+- `typewise_linkedin_post(topic)` — LinkedIn-post template (hook + insight + CTA) for 6 growth topics, kept in the 600–1500 char sweet spot
+- `typewise_influencer_finder(topic)` — ranked CX / AI influencer matches over 12 curated names (Shep Hyken, Jeanne Bliss, Blake Morgan, Sarah Guo, …) with tag-overlap scoring
+
+**Start the server**
 
 ```bash
 python -m src.mcp_server.server
 ```
 
-This boots a local MCP server exposing **seven tools** — a buyer-evaluation surface (`compare`, `pricing`, `case_study`, `integration_check`) and a **Growth Playbook** surface (`podcast_pitch`, `linkedin_post`, `influencer_finder`):
-
-**Buyer evaluation**
-- `typewise_compare(competitor)` — structured comparison vs Fin, Decagon, Sierra, Zendesk AI, with the recommended one-sentence positioning for that matchup
-- `typewise_pricing_calculator(monthly_tickets, resolution_rate=0.70, human_cost_per_ticket_usd=6.0)` — cost + year-one ROI at the public $1/resolution price
-- `typewise_find_case_study(industry, company_size, region)` — the closest-matching Typewise customer story plus up to two alternates and the reasoning
-- `typewise_integration_check(platform)` — does Typewise integrate with X? Honest confidence tier (confirmed / native_channel / high_likelihood / unlikely / unknown), never a fake yes
-
-**Growth Playbook**
-- `typewise_podcast_pitch(podcast_name)` — guest-pitch draft for any of 10 curated CX/CS-AI podcasts (No Priors, The CX Cast, Modern Customer, Be Customer Led, Punk CX, Support Driven, 20VC, SaaStr, Lenny, Acquired) — 3-paragraph pitch + 4 talking points + contact_hint + evidence URL
-- `typewise_linkedin_post(topic)` — assembled LinkedIn-post template (hook + insight + CTA) for 6 growth topics (augment_vs_replace, eu_data_residency, dach_case_study, agent_vs_chatbot, multi_agent_orchestration, helpdesk_layer_not_replacement), each kept in the 600-1500 char sweet spot with 3-5 hashtags
-- `typewise_influencer_finder(topic)` — ranked CX/AI influencer matches (12 curated: Shep Hyken, Jeanne Bliss, Blake Morgan, Bill Staikos, Adrian Swinscoe, Sarah Guo, …) with tag-overlap scoring and per-match reasoning
-
-Verified via the MCP runtime, not just Python imports (see `tests/test_mcp_integration.py`):
-
-```text
-7 tools live:
-  - typewise_compare(['competitor'])
-  - typewise_pricing_calculator(['monthly_tickets', 'resolution_rate', 'human_cost_per_ticket_usd'])
-  - typewise_find_case_study(['industry', 'company_size', 'region'])
-  - typewise_integration_check(['platform'])
-  - typewise_podcast_pitch(['podcast_name'])
-  - typewise_linkedin_post(['topic'])
-  - typewise_influencer_finder(['topic', 'max_results'])
-```
-
-### Wire into Claude Desktop
-
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+**Wire into Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
 
 ```json
 {
@@ -89,98 +83,67 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 }
 ```
 
-Restart Claude Desktop. Then ask:
+Restart Claude Desktop, then ask:
 
-> *"I'm evaluating Typewise for a 30k-ticket-per-month DACH e-commerce retailer running Zendesk. Compare them with Fin, estimate ROI, find me the closest case study, and confirm Zendesk integration."*
+> *"I'm evaluating Typewise for a 30k-ticket-per-month DACH retailer running Zendesk. Compare them with Fin, estimate ROI, find me the closest case study, and confirm Zendesk integration."*
 
-Claude will fire `typewise_compare`, `typewise_pricing_calculator`, `typewise_find_case_study`, and `typewise_integration_check` in a single turn and synthesize a buyer-ready brief.
+Claude fires four tools in a single turn and returns a buyer-ready brief.
 
 ## Tests
 
 ```bash
 python -m pytest tests/ -v
-forge          # regression check vs baseline (forge-shield, optional)
 ```
 
-Current state: **125 tests, all green** (MCP unit + protocol-level integration + radar + dashboard). Latest forge run:
+**167 tests passing.** CI runs on every push against Python 3.11 + 3.12.
 
-```text
-FORGE REPORT — PASS
-Tests: 125 | Passed: 125 | Failed: 0 | Duration: 8.4s
-```
+## What I'd build in month 1 if hired
 
-One silent bug found during the build (BUG-001, Streamlit launcher) — caught via visual screenshot audit, fixed, documented in [BUGS.md](BUGS.md), 4 regression tests added.
-
-### Run the live dashboard (Streamlit)
-
-```bash
-python -m src.seed_demo                # load 8 hand-crafted demo threads
-streamlit run streamlit_app.py         # launch the dashboard at http://localhost:8501
-```
-
-> ⚠️ Always run via `streamlit_app.py` at the repo root, never `streamlit run src/app.py` directly — see [BUGS.md](BUGS.md) BUG-001 for why.
-
-![Dashboard screenshot — 5 threads where Typewise should have been mentioned, top thread in German (DACH moat visible), Claude-drafted replies ready for human review](docs/dashboard.png)
-
-The dashboard shows, in real time:
-
-- **Headline metric** — threads this week where Typewise should have been mentioned but wasn't
-- **Coverage gap** — vs threads where Typewise *was* mentioned
-- **Filters** — source (Reddit / HN / DACH), locale (en / de / fr / it), buyer intent (research / comparison / complaint / shopping), minimum relevance score
-- **Per-thread expander** — URL, author, age, competitors mentioned, body, and the Claude-drafted reply ready for a human reviewer to send
-
-## What I'd build in month 1 if Typewise hired me
-
-A condensed view of the [full application](docs/APPLICATION.md):
-
-| Week | Channel / system | Deliverable |
-|---|---|---|
-| 1 | Reddit + HN radar, scaled | Daily auto-run via GitHub Actions, Slack/Discord alerts at relevance ≥ 0.8 |
-| 1 | Founder LinkedIn cadence (David + Janis) | 3 posts/week on the "augment, don't replace" thesis Sierra/Decagon can't credibly play |
-| 2 | Show HN of the new agent platform | First Typewise Show HN since 2020 (the old keyboard product). Anchor: multi-agent orchestration + EU data residency. |
-| 2 | DACH community infiltration | t3n editorial pitch, OMR Slack, Support Driven listener. No spam — conversation. |
-| 3 | "X vs Typewise" comparison subdomain | Programmatic SEO à la `fin.ai/learn` — `typewise-vs-fin`, `vs-decagon`, `vs-sierra` |
-| 3 | Founder podcast booking | No Priors, The CX Cast, Be Customer Led, Punk CX — augment-don't-replace pitch |
-| 4 | G2 review collection campaign | Target Leader Mid-Market badge by month 3 |
-| 4 | First measurable signal | G2 pageview lift, branded search lift, qualified inbound from at least one channel |
+| Week | Deliverable |
+|---|---|
+| 1 | Daily auto-run of the radar via GitHub Actions; Slack / Discord alerts at relevance ≥ 0.8 |
+| 1 | Founder LinkedIn cadence (David + Janis) — 3 posts/week on the *augment, don't replace* thesis Sierra / Decagon can't credibly play |
+| 2 | First Typewise Show HN since 2020 — anchor on multi-agent orchestration + EU data residency |
+| 2 | DACH community infiltration — t3n editorial pitch, OMR Slack, Support Driven listener (conversation, not spam) |
+| 3 | `typewise.app/compare/typewise-vs-{fin,decagon,sierra}` — programmatic SEO subdomain à la `fin.ai/learn` |
+| 3 | Founder podcast booking on No Priors / CX Cast / Be Customer Led / Punk CX |
+| 4 | G2 review collection campaign — target Leader Mid-Market badge by month 3 |
+| 4 | First measurable signal — G2 pageview lift, branded search lift, qualified inbound from at least one channel |
 
 No attachment to channels — only to signal. I iterate to whatever lights up first.
 
-## Why this composition, not a generic Claude-prompted answer
+## Architecture
 
-Twenty other candidates will prompt Claude for "what should I build for Typewise" and ship variants of a Reddit scraper. That's the LLM's default. Three things make this artifact harder to copy:
+```
+src/
+├── mcp_server/          # 7 MCP tools + curated datasets (competitors, case studies, podcasts, influencers, linkedin templates)
+├── radar/               # hackernews + reddit + dach scrapers, scorer (Claude Haiku 4.5), SQLite store, runner
+└── app.py               # Streamlit dashboard
 
-1. **MCP server.** You pushed [`mcp-chaos-rig`](https://github.com/Typewise) to your GitHub two days before this job opened. An LLM that hasn't seen that won't propose an MCP integration.
-2. **DACH geographic moat.** I'm Swiss / CET / multilingual. A US or India-based candidate can't credibly run the t3n.de or OMR Slack channel work.
-3. **The bug audit.** I shipped fast, then ran a "no silent bugs" pass that caught a runtime crash pytest missed. That's documented in [BUGS.md](BUGS.md). It's the work most people skip.
+streamlit_app.py         # entry point Streamlit Community Cloud auto-discovers
+.github/workflows/
+├── tests.yml            # pytest on push, Python 3.11 + 3.12
+└── radar.yml            # cron 6h — fetch + score + publish refreshed DB
+```
 
-## Status
+Schema and tool wiring details: open the source. The repo is small on purpose.
 
-Built solo across two Claude Code instances in ~4 hours. **Shippable state**, deploy-ready.
+## Deploy
 
-## Roadmap
+See [`docs/DEPLOY.md`](docs/DEPLOY.md) for Streamlit Community Cloud setup and the optional GitHub Actions scheduled-refresh wiring.
 
-- [x] Hacker News scraper (Algolia API, no auth)
-- [x] Reddit scraper (PRAW, read-only, env-based creds)
-- [x] DACH RSS scrapers (t3n.de, deutsche-startups.de, siliconcanals.com)
-- [x] Locale tagging (langdetect, deterministic seed)
-- [x] Claude scorer (Haiku 4.5, tool_use, prompt-cached system prompt)
-- [x] SQLite store with idempotent upserts
-- [x] Streamlit dashboard with filters + draft replies
-- [x] MCP server with 4 tools wired into Claude Desktop
-- [x] 125 pytest tests, forge regression baseline, GitHub Actions CI
-- [x] BUG-001 (silent Streamlit crash) found visually, fixed, regression-tested
-- [ ] Deploy to Streamlit Community Cloud — see [docs/DEPLOY.md](docs/DEPLOY.md)
-- [ ] Record Loom 90s — see [docs/LOOM_SCRIPT.md](docs/LOOM_SCRIPT.md)
+## Bugs found and fixed during the build
+
+See [`BUGS.md`](BUGS.md). Two silent bugs were caught **only** via visual inspection of the deployed dashboard — both are now documented with their root cause and a regression test. Tests can't catch what the user-facing surface silently misrepresents; that pass is part of the build.
 
 ## Stack
 
-Python 3.11+ · MCP SDK · Anthropic SDK (Claude Haiku 4.5) · PRAW · feedparser · httpx · BeautifulSoup · langdetect · SQLite · Streamlit · pytest · forge-shield · GitHub Actions · Streamlit Community Cloud (deploy target)
+Python 3.12 · MCP SDK · Anthropic SDK (Claude Haiku 4.5, tool-use, prompt caching, exponential-backoff retry) · PRAW · feedparser · httpx · BeautifulSoup · langdetect · SQLite · Streamlit · pytest · GitHub Actions · Streamlit Community Cloud.
 
 ## Ethics
 
-Drafted replies are **suggestions for a human reviewer**, never auto-posted. Reddit and HN community norms explicitly prohibit drive-by promotion; this tool exists to surface conversations, not to spam them.
+Drafted replies are **suggestions for a human reviewer, never auto-posted**. Reddit and Hacker News norms explicitly prohibit drive-by promotion; this tool exists to surface conversations, not to spam them.
 
 ## License
 
-MIT
+[MIT](LICENSE)
