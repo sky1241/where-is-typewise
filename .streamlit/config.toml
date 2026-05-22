@@ -1,9 +1,10 @@
 [theme]
+# Tokens aligned to bible-ux VALUES.md § Dark mode surfaces + WEB.md § CP.
 base = "dark"
-primaryColor = "#7c3aed"
-backgroundColor = "#0a0e1a"
-secondaryBackgroundColor = "#161b29"
-textColor = "#e5e7eb"
+primaryColor = "#6c5cf0"             # primary-500, hsl(252, 75%, 58%) → hex
+backgroundColor = "#121212"          # surface-0, Material 3 base
+secondaryBackgroundColor = "#1e1e1e" # surface-1, 1 dp elevation
+textColor = "#e7e8eb"                # text-primary, never pure white
 font = "sans serif"
 
 [server]
