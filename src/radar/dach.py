@@ -37,7 +37,9 @@ def _stable_id(feed_name: str, entry: Any) -> str:
     raw = entry.get("id") or entry.get("link") or entry.get("title") or ""
     if not raw:
         raise ValueError(f"feed {feed_name!r} entry has no id, link, or title")
-    digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
+    # sha1 here is a non-crypto dedup hash for stable thread IDs (see _stable_id docstring intent);
+    # collision resistance is not a security property we rely on, so bandit B324 is a false positive.
+    digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]  # nosec B324
     return f"dach:{feed_name}:{digest}"
 
 

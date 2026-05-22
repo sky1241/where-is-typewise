@@ -185,8 +185,11 @@ def query_threads(
         params.append(min_score)
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     params.append(int(limit))
+    # `where` is composed only of literal predicate strings from this function (e.g. "source = ?")
+    # plus the literal "WHERE"/"AND" connectors. Every caller-supplied value flows through `params`
+    # as a bound parameter — never into the SQL text — so bandit B608 is a false positive here.
     sql = (
-        f"SELECT * FROM threads {where} "
+        f"SELECT * FROM threads {where} "  # nosec B608
         "ORDER BY relevance_score IS NULL, relevance_score DESC LIMIT ?"
     )
     return [_row_to_dict(r) for r in conn.execute(sql, params).fetchall()]
