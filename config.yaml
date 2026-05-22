@@ -19,6 +19,13 @@ reddit:
 hackernews:
   max_results: 50
 
+dach:
+  # Empty keywords list = no filter. DACH RSS feeds are general startup/tech news;
+  # a strict CS-AI filter usually returns 0 hits per day. We let everything through
+  # and rely on the scorer + locale tag to surface the relevant entries.
+  keywords: []
+  # feeds: omitted -> dach.DEFAULT_FEEDS (t3n.de, deutsche-startups.de, siliconcanals.com)
+
 competitors:
   - Intercom
   - Fin

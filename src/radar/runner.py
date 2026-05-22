@@ -1,11 +1,12 @@
-"""Radar orchestrator — fetch HN + Reddit, score via Claude, persist to SQLite.
+"""Radar orchestrator — fetch HN + Reddit + DACH RSS, locale-tag, score via Claude, persist.
 
 Run from the repo root:
 
     python -m src.radar.runner --db data/radar.db
 
-Degrades gracefully when secrets are missing:
+Degrades gracefully when secrets / feeds are missing:
   * No REDDIT_CLIENT_ID / SECRET → skip Reddit, log a warning, keep going on HN.
+  * Dead RSS feed                → skip that feed, log a warning, keep going.
   * No ANTHROPIC_API_KEY         → skip scoring, persist unscored threads.
 """
 
@@ -25,7 +26,7 @@ try:
 except ImportError:  # pragma: no cover — anthropic is in requirements.txt
     Anthropic = None  # type: ignore[assignment]
 
-from src.radar import hackernews, reddit, scorer, store
+from src.radar import dach, hackernews, locale_tagger, reddit, scorer, store
 
 logger = logging.getLogger("radar.runner")
 
@@ -71,6 +72,25 @@ def _fetch_reddit(config: dict[str, Any]) -> list[dict[str, Any]]:
     return threads
 
 
+def _fetch_dach(config: dict[str, Any]) -> list[dict[str, Any]]:
+    """`dach.keywords` overrides the global `keywords` list — pass an empty list to disable
+    filtering entirely (DACH feeds are general startup news; tight filters often kill the
+    signal and the radar target of >=20 DACH threads/day relies on a wide net here)."""
+    dach_cfg = config.get("dach") or {}
+    feeds = dach_cfg.get("feeds")
+    keywords = dach_cfg["keywords"] if "keywords" in dach_cfg else (config.get("keywords") or [])
+    threads = dach.fetch_all(feeds=feeds, keywords=keywords)
+    logger.info("DACH: fetched %d threads across %d feeds", len(threads), len(feeds or dach.DEFAULT_FEEDS))
+    return threads
+
+
+def _tag_locales(db_path: Path) -> int:
+    with store.connect(db_path) as conn:
+        n = locale_tagger.tag_threads_in_db(conn, only_untagged=True)
+    logger.info("Locale-tagged %d previously-untagged threads", n)
+    return n
+
+
 def _score_and_persist(
     threads: list[dict[str, Any]],
     *,
@@ -98,16 +118,21 @@ def run(
     *,
     db_path: Path = _DEFAULT_DB_PATH,
     use_reddit: bool = True,
+    use_dach: bool = True,
     use_scoring: bool = True,
+    tag_locale: bool = True,
 ) -> dict[str, int]:
-    """Run one cycle. Returns a summary {fetched_hn, fetched_reddit, persisted, scored}."""
+    """Run one cycle. Returns a summary dict with fetch/persist/tag/score counts."""
     hn_threads = _fetch_hn(config)
     reddit_threads = _fetch_reddit(config) if use_reddit else []
-    all_threads = hn_threads + reddit_threads
+    dach_threads = _fetch_dach(config) if use_dach else []
+    all_threads = hn_threads + reddit_threads + dach_threads
 
     with store.connect(db_path) as conn:
         persisted = store.upsert_many(conn, all_threads)
     logger.info("Persisted %d threads to %s", persisted, db_path)
+
+    locale_tagged = _tag_locales(db_path) if tag_locale else 0
 
     scored = 0
     if use_scoring and all_threads:
@@ -126,7 +151,9 @@ def run(
     return {
         "fetched_hn": len(hn_threads),
         "fetched_reddit": len(reddit_threads),
+        "fetched_dach": len(dach_threads),
         "persisted": persisted,
+        "locale_tagged": locale_tagged,
         "scored": scored,
     }
 
@@ -136,6 +163,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--config", type=Path, default=_DEFAULT_CONFIG_PATH, help="Path to config.yaml")
     p.add_argument("--db", type=Path, default=_DEFAULT_DB_PATH, help="SQLite DB path")
     p.add_argument("--no-reddit", action="store_true", help="Skip Reddit fetch")
+    p.add_argument("--no-dach", action="store_true", help="Skip DACH RSS fetch")
+    p.add_argument("--no-locale-tag", action="store_true", help="Skip langdetect post-pass")
     p.add_argument("--no-scoring", action="store_true", help="Persist threads unscored")
     p.add_argument("-v", "--verbose", action="store_true", help="DEBUG-level logs")
     return p
@@ -152,12 +181,16 @@ def main(argv: list[str] | None = None) -> int:
         config,
         db_path=args.db,
         use_reddit=not args.no_reddit,
+        use_dach=not args.no_dach,
         use_scoring=not args.no_scoring,
+        tag_locale=not args.no_locale_tag,
     )
     print(
         f"HN={summary['fetched_hn']} "
         f"Reddit={summary['fetched_reddit']} "
+        f"DACH={summary['fetched_dach']} "
         f"persisted={summary['persisted']} "
+        f"locale_tagged={summary['locale_tagged']} "
         f"scored={summary['scored']}"
     )
     return 0
