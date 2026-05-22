@@ -11,6 +11,7 @@ from __future__ import annotations
 from mcp.server.fastmcp import FastMCP
 
 from src.mcp_server.tools import compare as compare_mod
+from src.mcp_server.tools import pricing as pricing_mod
 
 mcp = FastMCP("typewise-mcp")
 
@@ -27,6 +28,29 @@ def typewise_compare(competitor: str) -> dict:
         and a one-sentence recommended positioning tuned to this specific matchup.
     """
     return compare_mod.compare(competitor)
+
+
+@mcp.tool()
+def typewise_pricing_calculator(
+    monthly_tickets: int,
+    resolution_rate: float = 0.70,
+    human_cost_per_ticket_usd: float = 6.0,
+) -> dict:
+    """Estimate Typewise cost and ROI at $1/resolution pricing for a given ticket volume.
+
+    Args:
+        monthly_tickets: Number of inbound support tickets per month.
+        resolution_rate: Share of tickets the AI is expected to fully resolve (0..1, default 0.70).
+        human_cost_per_ticket_usd: Fully-loaded blended human cost per ticket (default $6).
+
+    Returns:
+        Monthly + annual cost figures, savings, year-one ROI multiple, and the assumptions used.
+    """
+    return pricing_mod.estimate(
+        monthly_tickets=monthly_tickets,
+        resolution_rate=resolution_rate,
+        human_cost_per_ticket_usd=human_cost_per_ticket_usd,
+    )
 
 
 def main() -> None:
