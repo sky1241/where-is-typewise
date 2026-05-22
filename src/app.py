@@ -63,8 +63,8 @@ def main() -> None:
     if not DB_PATH.exists():
         st.warning(
             f"No database found at `{DB_PATH}`. "
-            "Run `python -m src.radar.runner` (once Phase 2 lands) or "
-            "`python -m src.seed_demo` to load a demo dataset."
+            "Run `python -m src.seed_demo` for the demo dataset, "
+            "or `python -m src.radar.runner` to fetch live HN + Reddit + DACH data."
         )
         return
 
