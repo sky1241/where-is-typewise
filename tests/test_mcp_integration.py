@@ -21,7 +21,7 @@ def anyio_backend():
     return "asyncio"
 
 
-async def test_server_exposes_four_tools():
+async def test_server_exposes_seven_tools():
     tools = await mcp.list_tools()
     names = sorted(t.name for t in tools)
     assert names == sorted([
@@ -29,6 +29,9 @@ async def test_server_exposes_four_tools():
         "typewise_pricing_calculator",
         "typewise_find_case_study",
         "typewise_integration_check",
+        "typewise_podcast_pitch",
+        "typewise_linkedin_post",
+        "typewise_influencer_finder",
     ]), f"Unexpected tool set: {names}"
 
 
@@ -86,6 +89,38 @@ async def test_integration_check_tool_callable_via_mcp_returns_zendesk_confirmed
     )
     payload = _payload(result)
     assert payload["status"] == "confirmed"
+
+
+async def test_podcast_pitch_tool_callable_via_mcp_returns_no_priors_with_host():
+    result = await mcp.call_tool(
+        "typewise_podcast_pitch",
+        {"podcast_name": "No Priors"},
+    )
+    payload = _payload(result)
+    assert payload["podcast"]["name"] == "No Priors"
+    assert "Sarah Guo" in payload["podcast"]["host"]
+    assert 200 <= len(payload["recommended_pitch"]) < 2000
+
+
+async def test_linkedin_post_tool_callable_via_mcp_returns_eu_data_in_sweet_spot():
+    result = await mcp.call_tool(
+        "typewise_linkedin_post",
+        {"topic": "eu_data_residency"},
+    )
+    payload = _payload(result)
+    assert payload["topic"] == "eu_data_residency"
+    assert 600 <= payload["length_chars"] <= 1500
+    assert 3 <= len(payload["hashtags"]) <= 5
+
+
+async def test_influencer_finder_tool_callable_via_mcp_ranks_sarah_guo_for_ai_agents():
+    result = await mcp.call_tool(
+        "typewise_influencer_finder",
+        {"topic": "ai agents"},
+    )
+    payload = _payload(result)
+    assert payload["best_matches"][0]["name"] == "Sarah Guo"
+    assert len(payload["best_matches"]) <= 3
 
 
 def _payload(result) -> dict:
