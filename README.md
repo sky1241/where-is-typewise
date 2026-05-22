@@ -81,12 +81,14 @@ python -m pytest tests/ -v
 forge          # regression check vs baseline (forge-shield, optional)
 ```
 
-Current state: **41 tests, all green** (34 unit tests + 7 MCP protocol-level integration tests). Latest forge run:
+Current state: **125 tests, all green** (MCP unit + protocol-level integration + radar + dashboard). Latest forge run:
 
 ```text
 FORGE REPORT — PASS
-Tests: 41 | Passed: 41 | Failed: 0 | Duration: 3.6s
+Tests: 125 | Passed: 125 | Failed: 0 | Duration: 8.4s
 ```
+
+One silent bug found during the build (BUG-001, Streamlit launcher) — caught via visual screenshot audit, fixed, documented in [BUGS.md](BUGS.md), 4 regression tests added.
 
 ### Run the live dashboard (Streamlit)
 
@@ -105,6 +107,31 @@ The dashboard shows, in real time:
 - **Coverage gap** — vs threads where Typewise *was* mentioned
 - **Filters** — source (Reddit / HN / DACH), locale (en / de / fr / it), buyer intent (research / comparison / complaint / shopping), minimum relevance score
 - **Per-thread expander** — URL, author, age, competitors mentioned, body, and the Claude-drafted reply ready for a human reviewer to send
+
+## What I'd build in month 1 if Typewise hired me
+
+A condensed view of the [full application](docs/APPLICATION.md):
+
+| Week | Channel / system | Deliverable |
+|---|---|---|
+| 1 | Reddit + HN radar, scaled | Daily auto-run via GitHub Actions, Slack/Discord alerts at relevance ≥ 0.8 |
+| 1 | Founder LinkedIn cadence (David + Janis) | 3 posts/week on the "augment, don't replace" thesis Sierra/Decagon can't credibly play |
+| 2 | Show HN of the new agent platform | First Typewise Show HN since 2020 (the old keyboard product). Anchor: multi-agent orchestration + EU data residency. |
+| 2 | DACH community infiltration | t3n editorial pitch, OMR Slack, Support Driven listener. No spam — conversation. |
+| 3 | "X vs Typewise" comparison subdomain | Programmatic SEO à la `fin.ai/learn` — `typewise-vs-fin`, `vs-decagon`, `vs-sierra` |
+| 3 | Founder podcast booking | No Priors, The CX Cast, Be Customer Led, Punk CX — augment-don't-replace pitch |
+| 4 | G2 review collection campaign | Target Leader Mid-Market badge by month 3 |
+| 4 | First measurable signal | G2 pageview lift, branded search lift, qualified inbound from at least one channel |
+
+No attachment to channels — only to signal. I iterate to whatever lights up first.
+
+## Why this composition, not a generic Claude-prompted answer
+
+Twenty other candidates will prompt Claude for "what should I build for Typewise" and ship variants of a Reddit scraper. That's the LLM's default. Three things make this artifact harder to copy:
+
+1. **MCP server.** You pushed [`mcp-chaos-rig`](https://github.com/Typewise) to your GitHub two days before this job opened. An LLM that hasn't seen that won't propose an MCP integration.
+2. **DACH geographic moat.** I'm Swiss / CET / multilingual. A US or India-based candidate can't credibly run the t3n.de or OMR Slack channel work.
+3. **The bug audit.** I shipped fast, then ran a "no silent bugs" pass that caught a runtime crash pytest missed. That's documented in [BUGS.md](BUGS.md). It's the work most people skip.
 
 ## Status
 
