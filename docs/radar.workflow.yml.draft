@@ -1,0 +1,99 @@
+name: radar-refresh
+
+# Runs the radar pipeline on a schedule and publishes the refreshed SQLite DB
+# to the `data/latest` branch. Keeps main's history free of binary churn.
+#
+# Streamlit Cloud serves `data/radar.db` from main (the seed). To pick up the
+# refreshed data, either re-deploy the Streamlit app pointing at `data/latest`,
+# or run a separate merge step. See docs/DEPLOY.md § "Scheduled refresh".
+
+on:
+  schedule:
+    # Every 6 hours at :05 — slightly off the hour to dodge cron contention on GitHub.
+    - cron: '5 */6 * * *'
+  workflow_dispatch: {}
+
+# Cron and manual triggers must not race against each other.
+concurrency:
+  group: radar-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run radar (HN + DACH; Reddit skipped — no creds in CI)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          mkdir -p data
+          # The runner is failure-soft by design: a missing key skips scoring,
+          # a dead RSS feed skips that feed, Anthropic 5xx skips that thread.
+          # Exit 0 here means "at least the DB was written".
+          python -m src.radar.runner --db data/radar.db --no-reddit -v
+
+      - name: Summarize DB
+        run: |
+          python - <<'PY'
+          import sqlite3
+          from collections import Counter
+          conn = sqlite3.connect("data/radar.db")
+          total = conn.execute("SELECT COUNT(*) FROM threads").fetchone()[0]
+          by_source = dict(Counter(r[0] for r in conn.execute("SELECT source FROM threads")))
+          by_locale = dict(Counter(r[0] for r in conn.execute("SELECT locale FROM threads")).most_common(8))
+          scored = conn.execute("SELECT COUNT(*) FROM threads WHERE relevance_score IS NOT NULL").fetchone()[0]
+          high_signal = conn.execute(
+              "SELECT COUNT(*) FROM threads WHERE typewise_mentioned = 0 AND relevance_score > 0.7"
+          ).fetchone()[0]
+          print(f"total threads      : {total}")
+          print(f"by source          : {by_source}")
+          print(f"by locale          : {by_locale}")
+          print(f"scored             : {scored}")
+          print(f"unmentioned >0.7   : {high_signal}")
+          PY
+
+      - name: Publish DB to data/latest branch
+        run: |
+          set -euo pipefail
+          DB_SRC="$PWD/data/radar.db"
+          if [ ! -s "$DB_SRC" ]; then
+            echo "::error::data/radar.db is missing or empty — refusing to publish"
+            exit 1
+          fi
+          STAGE="$(mktemp -d)"
+          cd "$STAGE"
+          git init -q -b data/latest
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp "$DB_SRC" ./radar.db
+          # Capture the producing commit so consumers can trace lineage.
+          echo "${GITHUB_SHA}" > .source-sha
+          date -u +'%Y-%m-%dT%H:%M:%SZ' > .refreshed-at
+          git add radar.db .source-sha .refreshed-at
+          git commit -q -m "data: refresh @ $(cat .refreshed-at) from ${GITHUB_SHA:0:7}"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          # Force-push: data/latest is a moving snapshot, not a history.
+          git push -f origin data/latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
