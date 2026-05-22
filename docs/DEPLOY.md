@@ -60,7 +60,7 @@ Streamlit Cloud will rebuild and the dashboard will load with the seed visible. 
 
 **Option B — run the radar in CI on a schedule:**
 
-GitHub Actions cron → `python -m src.radar.runner` → push the updated DB back. More moving parts; only set up if you actually want live data on the public dashboard. For the application, Option A is the right call.
+GitHub Actions cron → `python -m src.radar.runner` → push the updated DB to a separate `data/latest` branch. Already wired in `.github/workflows/radar.yml` — see [Scheduled refresh](#scheduled-refresh-github-actions) below for the setup steps. For the application packet itself, option A is sufficient; option B is for when you want the public dashboard to keep moving past the seed.
 
 ## Verifying the deploy
 
@@ -80,6 +80,65 @@ If the headline says zero and the table is empty, the demo seed didn't make it i
 | Build hangs at "Installing requirements" | `mcp` SDK still resolving | Wait the full 3 minutes, then retry. The MCP SDK itself isn't needed for the dashboard — could be pruned to a `requirements-dashboard.txt` if it keeps biting. |
 | Slow first load after long idle | Streamlit Community Cloud cold start | Documented behavior. Send the Loom link instead of the live URL if you need a fast first impression. |
 
+## Scheduled refresh (GitHub Actions)
+
+`.github/workflows/radar.yml` re-runs the radar on a 6-hour cron (and on-demand
+via the **Run workflow** button) so the data behind the dashboard doesn't grow
+stale. Each run does:
+
+1. `python -m src.radar.runner --db data/radar.db --no-reddit -v` (HN + DACH;
+   Reddit skipped because CI has no OAuth creds — Anthropic scoring runs iff
+   `ANTHROPIC_API_KEY` is set in the repo secrets).
+2. A summary print (count by source / locale, scored count, unmentioned-but-
+   high-signal count).
+3. Force-push of the refreshed `radar.db` to the `data/latest` branch, along
+   with a `.source-sha` (which main commit produced it) and `.refreshed-at`
+   (ISO timestamp).
+
+`data/latest` is a moving snapshot, not a history — that's why the workflow
+force-pushes. main stays free of binary churn.
+
+### Setting up the secret (one-time)
+
+For the workflow's scoring step to actually call Claude (instead of skipping):
+
+1. Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+2. **Name:** `ANTHROPIC_API_KEY`
+3. **Secret:** your `sk-ant-...` key
+4. Save.
+
+Without this secret, the workflow still runs — the runner skips scoring with a
+warning, persists the unscored HN+DACH threads, and publishes the DB. Useful
+for keeping the dataset fresh even when you don't want to spend on inference.
+
+(`GITHUB_TOKEN` for the push is provided automatically — no setup needed.)
+
+### Triggering a refresh manually
+
+Repo → **Actions** → **radar-refresh** → **Run workflow** → pick `main` →
+**Run**. Useful right after a config or scorer change to verify the next cron
+won't surprise you.
+
+### Wiring the refreshed data into the Streamlit dashboard
+
+Streamlit Community Cloud only deploys from main, so it won't pick up
+`data/latest` automatically. Three options, easiest first:
+
+1. **Periodic manual merge** (zero infrastructure): when you want the
+   dashboard to advance, `git fetch origin data/latest && git checkout
+   origin/data/latest -- radar.db && git mv radar.db data/radar.db && git
+   commit -m "data: sync latest" && git push`. Streamlit Cloud auto-rebuilds.
+2. **Auto-merge PR**: extend the workflow to open a PR on each run with
+   `peter-evans/create-pull-request` + auto-merge. Leaves an audit trail in
+   PRs but adds noise.
+3. **Runtime fetch**: have `src/app.py` download the raw DB from
+   `https://raw.githubusercontent.com/<owner>/<repo>/data/latest/radar.db`
+   on cold-start. Already supported via the `WIT_DB_PATH` env var pattern —
+   point it at a local cache path and fetch on a TTL. More moving parts;
+   skip for the candidate artifact.
+
+For the application packet, option 1 once a day is plenty.
+
 ## Cost
 
-Free tier. The dashboard reads SQLite, no per-request inference. The only cost is on Anthropic for the scorer (~$0.50 per 300-thread cycle at Haiku 4.5 prices).
+Free tier. The dashboard reads SQLite, no per-request inference. The only cost is on Anthropic for the scorer (~$0.50 per 300-thread cycle at Haiku 4.5 prices). The scheduled workflow at 4×/day = ~$2/day if you always have it on; flip the cron off in the workflow file (or disable the workflow from the Actions tab) to pause.
