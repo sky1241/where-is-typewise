@@ -135,20 +135,26 @@ Twenty other candidates will prompt Claude for "what should I build for Typewise
 
 ## Status
 
-Work in progress. Built solo in ~4 hours. See [TODO](#roadmap).
+Built solo across two Claude Code instances in ~4 hours. **Shippable state**, deploy-ready.
 
 ## Roadmap
 
-- [ ] Reddit scraper (PRAW, 4 subs)
-- [ ] Hacker News scraper (Algolia API)
-- [ ] Claude-based scorer + reply drafter
-- [ ] Streamlit dashboard
-- [ ] Public deploy (Fly.io)
-- [ ] Video walkthrough
+- [x] Hacker News scraper (Algolia API, no auth)
+- [x] Reddit scraper (PRAW, read-only, env-based creds)
+- [x] DACH RSS scrapers (t3n.de, deutsche-startups.de, siliconcanals.com)
+- [x] Locale tagging (langdetect, deterministic seed)
+- [x] Claude scorer (Haiku 4.5, tool_use, prompt-cached system prompt)
+- [x] SQLite store with idempotent upserts
+- [x] Streamlit dashboard with filters + draft replies
+- [x] MCP server with 4 tools wired into Claude Desktop
+- [x] 125 pytest tests, forge regression baseline, GitHub Actions CI
+- [x] BUG-001 (silent Streamlit crash) found visually, fixed, regression-tested
+- [ ] Deploy to Streamlit Community Cloud — see [docs/DEPLOY.md](docs/DEPLOY.md)
+- [ ] Record the 90-second demo walkthrough
 
 ## Stack
 
-Python · PRAW · Anthropic SDK (Claude Sonnet 4.6) · SQLite · Streamlit · Fly.io
+Python 3.11+ · MCP SDK · Anthropic SDK (Claude Haiku 4.5) · PRAW · feedparser · httpx · BeautifulSoup · langdetect · SQLite · Streamlit · pytest · forge-shield · GitHub Actions · Streamlit Community Cloud (deploy target)
 
 ## Ethics
 
