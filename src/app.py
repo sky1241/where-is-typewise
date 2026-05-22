@@ -438,7 +438,23 @@ def _format_age(iso_ts: str | None) -> str:
     return f"{max(delta.seconds // 60, 1)}m ago"
 
 
-def _count_mentioned_recent(conn, *, since_days: int = 7) -> int:
+# Headline metric covers everything the radar has indexed, not a fixed time
+# window: HN's Algolia search returns the highest-relevance threads sorted by
+# relevance, not recency, so the top buyer conversations are often months
+# old. A strict "last 7 days" window would silently zero the headline metric
+# for real-world data. Schedule the radar to run frequently, and the dataset
+# stays fresh on its own.
+
+
+def _count_mentioned(conn) -> int:
+    sql = "SELECT COUNT(*) FROM threads WHERE typewise_mentioned = 1"
+    (n,) = conn.execute(sql).fetchone()
+    return int(n)
+
+
+def _count_mentioned_recent(conn, *, since_days: int = 30) -> int:
+    """Kept for backward compatibility with the test suite (test_app.py uses
+    since_days=14). The dashboard itself uses _count_mentioned without a window."""
     cutoff = (datetime.now(timezone.utc) - timedelta(days=since_days)).isoformat(timespec="seconds")
     sql = "SELECT COUNT(*) FROM threads WHERE typewise_mentioned = 1 AND created_at >= ?"
     (n,) = conn.execute(sql, (cutoff,)).fetchone()
@@ -496,8 +512,10 @@ def main() -> None:
 
 
 def _render_dashboard(conn) -> None:
-    headline_count = store.count_unmentioned_relevant(conn, min_score=0.7, since_days=7)
-    mentioned_count = _count_mentioned_recent(conn, since_days=7)
+    headline_count = store.count_unmentioned_relevant(
+        conn, min_score=0.7, since_days=None
+    )
+    mentioned_count = _count_mentioned(conn)
     severity = _kpi_severity(headline_count)
 
     st.markdown(
@@ -506,7 +524,7 @@ def _render_dashboard(conn) -> None:
             <div class="wit-kpi {severity}">
                 <div class="wit-kpi__label">Should have been mentioned</div>
                 <div class="wit-kpi__value">{headline_count}</div>
-                <div class="wit-kpi__sub">High-relevance threads this week with no Typewise mention</div>
+                <div class="wit-kpi__sub">High-relevance threads in the radar with no Typewise mention</div>
             </div>
             <div class="wit-kpi">
                 <div class="wit-kpi__label">Typewise was mentioned</div>
@@ -516,7 +534,7 @@ def _render_dashboard(conn) -> None:
             <div class="wit-kpi {severity}">
                 <div class="wit-kpi__label">Coverage gap</div>
                 <div class="wit-kpi__value">{headline_count}:{mentioned_count}</div>
-                <div class="wit-kpi__sub">Ratio of missed buyer conversations to wins</div>
+                <div class="wit-kpi__sub">Ratio of missed buyer conversations to wins across the indexed dataset</div>
             </div>
         </div>
         """,
