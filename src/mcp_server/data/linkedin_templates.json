@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "last_updated": "2026-05-22",
+    "source": "Templates derived from public LinkedIn patterns observed on founder accounts (Jesse Zhang / Decagon, Bret Taylor / Sierra, Des Traynor / Intercom). Each template is a SCAFFOLD — David or Janis should rewrite in their own voice before posting.",
+    "warning": "Templates use placeholders like {customer} and {metric} that must be filled with real values. Posting templates verbatim looks AI-generated; the value is the structure and hook, not the literal text."
+  },
+  "templates": {
+    "augment_vs_replace": {
+      "topic": "augment_vs_replace",
+      "label": "Augment vs replace (Sierra/Decagon counter-narrative)",
+      "hook": "Most AI-customer-service vendors are selling you a rip-and-replace.",
+      "insight": "Your CS team already runs on Zendesk or Salesforce or Freshdesk. They've trained the workflows, mapped the intents, exported the macros. Telling them to migrate to a chat-first AI vendor is asking for a 6-month deflection drop while everyone re-learns. There's another path: keep the helpdesk, layer the AI on top. {customer} did exactly that — {metric}. The board defends 'augmenting the agents we have' a lot better than 'replacing them' right now.",
+      "cta": "If you're shopping CS-AI in 2026, ask every vendor one question: 'Does this run inside our existing helpdesk, or do we migrate?' That answer changes the buy.",
+      "hashtags": ["CustomerExperience", "AI", "EnterpriseSoftware", "CustomerService"],
+      "target_audience": "CS Directors, VP Customer Operations, COOs scaling support",
+      "tone_notes": "Punchy. Use 'we' (David/Janis voice). Avoid hashtag stuffing — 4 max.",
+      "inspired_by": "Jesse Zhang (Decagon) LinkedIn pattern: declarative hook → operator-grounded insight → constraint-flipping CTA"
+    },
+    "eu_data_residency": {
+      "topic": "eu_data_residency",
+      "label": "EU data residency (DACH / regulated-industry angle)",
+      "hook": "Your CS data is your customers' problem reports. Where it lives matters.",
+      "insight": "Half the AI-CS market is US-hosted by default. For an EU enterprise — DACH retail, financial services, healthcare — that's a procurement blocker before the first agent ever runs. Typewise is EU-hosted and ISO 27001 by design, not as a checkbox added in year three. Our customers ({customer}, {customer2}) bought us partly because that conversation with their CISO was 30 minutes, not three months. The data residency question is rarely on the eval rubric publicly, but it kills more deals than any feature gap.",
+      "cta": "If your CS-AI shortlist doesn't include the data-residency story for your region, the shortlist is incomplete.",
+      "hashtags": ["GDPR", "DataResidency", "EnterpriseAI", "Compliance"],
+      "target_audience": "EU CS leaders, procurement, CISOs",
+      "tone_notes": "Grounded, slightly formal. Avoid 'in this post we'll explore'. Lead with the customer reality.",
+      "inspired_by": "Des Traynor (Intercom) compliance-anchored posts: name the procurement reality, then position"
+    },
+    "dach_case_study": {
+      "topic": "dach_case_study",
+      "label": "DACH customer story (multilingual support at scale)",
+      "hook": "DACH retail support is four languages, one helpdesk, zero margin for tone drift.",
+      "insight": "{customer} runs CS in DE / FR / IT / EN across {ticket_volume} tickets/month on Zendesk. They added Typewise as the AI layer six months ago. What changed: {metric_1}. What didn't change: the helpdesk, the macros, the routing rules. The Typewise multi-agent layer handles intent + retrieval + action on top of the system they already operate. Multilingual CS is the hardest variant — and it's where layer-on-helpdesk beats rip-and-replace by the widest margin.",
+      "cta": "If you operate CS across multiple languages on one helpdesk, the math on a layer architecture is worth re-running.",
+      "hashtags": ["DACH", "CustomerExperience", "MultilingualSupport", "AI"],
+      "target_audience": "DACH CS directors, EU multi-language operators",
+      "tone_notes": "Specific. Numbers, named customers. No marketing fluff. 'Multilingual' once, not five times.",
+      "inspired_by": "Forrester analyst LinkedIn style: case-study spine with concrete metric, no abstractions"
+    },
+    "agent_vs_chatbot": {
+      "topic": "agent_vs_chatbot",
+      "label": "Agent vs chatbot (architecture differentiator)",
+      "hook": "A chatbot answers. An agent resolves. The difference is who picks up the next ticket.",
+      "insight": "Chatbots got rebranded as 'AI agents' over the last 18 months. Most still aren't. The test: can it READ your CRM, UPDATE the ticket, TRIGGER the refund, NOTIFY the warehouse — all in one resolution? Or does it deflect to a human at step three? Typewise ships four agent classes (Supervisor, Specialist, Knowledge, Action) that compose into actual resolutions. The difference shows up in your AHT, not in the demo.",
+      "cta": "Next vendor demo: ask for an end-to-end resolution flow that touches three systems. The chatbots will dodge. The agents won't.",
+      "hashtags": ["AIAgents", "Automation", "CustomerService", "EnterpriseAI"],
+      "target_audience": "CS Ops leaders, helpdesk admins, automation engineers",
+      "tone_notes": "Technical but accessible. The 'three systems' test is the line that travels.",
+      "inspired_by": "Bret Taylor (Sierra) architectural-framing posts — turn the buyer's question into a technical test"
+    },
+    "multi_agent_orchestration": {
+      "topic": "multi_agent_orchestration",
+      "label": "Multi-agent orchestration (deep-tech angle)",
+      "hook": "Single-agent CS-AI is a 2024 architecture. The 2026 winners orchestrate.",
+      "insight": "The first wave of AI agents in CS was monolithic: one LLM, one prompt, one response. That works until you hit a ticket that needs to know last week's order history, pull a policy doc, and call a refund endpoint. Now you need agents that specialise: a Supervisor that routes intent, Specialists that resolve domain, Knowledge agents that retrieve, Action agents that execute. Typewise co-developed this orchestration with ETH Zurich AI Center — and we published our chaos-testing rig open-source ({mcp_chaos_rig_url}) so the rest of the industry can stress-test their own multi-agent stacks.",
+      "cta": "If your CS-AI vendor can't tell you which agent does what in a given resolution, you're buying a black box.",
+      "hashtags": ["MultiAgent", "AI", "MCP", "Anthropic"],
+      "target_audience": "Technical CS leaders, AI / platform engineers, AI-curious CTOs",
+      "tone_notes": "More technical. ETH + open-source mention earns credibility without bragging.",
+      "inspired_by": "ETH Zurich AI Center research-PR style: research roots + open artifact"
+    },
+    "helpdesk_layer_not_replacement": {
+      "topic": "helpdesk_layer_not_replacement",
+      "label": "Helpdesk as platform (integration-first positioning)",
+      "hook": "Your helpdesk isn't the problem. The AI vendors telling you to replace it are.",
+      "insight": "Zendesk shipped in 2007. Salesforce Service Cloud in 2009. Freshdesk in 2010. Hundreds of millions of tickets flow through these every year. The CS team knows them, the integrations are wired, the compliance is locked. The AI generation that asked you to migrate off was always going to lose to the AI generation that sat on top. Typewise plugs into 200+ existing CS systems — the helpdesk stays, the AI layer joins. That's the bet that makes board approval take days instead of quarters.",
+      "cta": "Migration cost is the silent killer of the AI-CS budget. Ask any vendor what their 90-day migration plan looks like — and budget accordingly.",
+      "hashtags": ["EnterpriseSoftware", "Integration", "CustomerService", "AI"],
+      "target_audience": "VP Customer Operations, IT directors, finance approvers",
+      "tone_notes": "Calmer, more 'industry observer' voice than the others. Best for Janis if David is loud elsewhere this week.",
+      "inspired_by": "Open-source-as-leverage posts à la Sid Sijbrandij (GitLab) — history-grounded, ecosystem-aware"
+    }
+  }
+}
