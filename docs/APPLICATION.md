@@ -10,7 +10,7 @@ Hi David, Janis,
 
 You asked for "something built." Here are three URLs:
 
-- **Live dashboard** — `[INSERT_STREAMLIT_URL]` — Reddit + Hacker News + DACH RSS radar. Counts the threads this week where Typewise should have been in the discussion. Zero this week so far. The radar shows you the gap.
+- **Live dashboard** — `https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app` — Reddit + Hacker News + DACH RSS radar. Counts the threads this week where Typewise should have been in the discussion. Zero this week so far. The radar shows you the gap.
 - **Repo** — https://github.com/sky1241/where-is-typewise — four Typewise tools exposed as an MCP server, plus the radar. 125 tests green. One silent bug found, fixed, documented (BUGS.md, BUG-001).
 - **Loom (90 s)** — `[INSERT_LOOM_URL]` — me triggering all four MCP tools from Claude Desktop with one buyer prompt, then the radar showing 5 unmentioned DACH/HN threads ready for reply drafts.
 
@@ -56,7 +56,7 @@ Available CET. Let's talk.
 
 ## Pre-send checklist
 
-- [ ] Replace `[INSERT_STREAMLIT_URL]` with the deployed dashboard URL
+- [x] Streamlit URL filled in (deployed at where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
 - [ ] Replace `[INSERT_LOOM_URL]` with the Loom recording URL
 - [ ] Replace `[email]` and confirm `github.com/sky1241` is the right handle
 - [ ] Re-read out loud — anything sounding LLM-generated, rewrite in your voice

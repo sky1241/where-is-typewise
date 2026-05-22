@@ -1,15 +1,27 @@
 # where-is-typewise
 
-A live radar that scans Reddit and Hacker News for conversations where customer service leaders are evaluating AI tools — and shows every thread where Typewise should have appeared in the discussion but didn't.
+[![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
+[![Tests](https://img.shields.io/badge/tests-125%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
+[![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
+[![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
+
+A live radar that scans Reddit, Hacker News, and DACH RSS feeds for conversations where customer-service leaders are evaluating AI tools — and surfaces every thread where Typewise should have appeared in the discussion but didn't.
 
 Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.ycombinator.com/companies/typewise/jobs/HmCzfBK-ai-growth-engineer) role. Not a deck. A working system.
 
+## 🔗 Live demo
+
+**[where-is-typewise.streamlit.app](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)** — the dashboard running on real seed data, with one click required to evaluate.
+
+![Dashboard screenshot — five high-relevance threads this week with no Typewise mention; the top one is a German DACH retail post at score 0.94, with a Claude-drafted reply ready for human review](docs/dashboard.png)
+
 ## What it does
 
-1. **Scrapes** Reddit (r/CustomerSuccess, r/SaaS, r/CustomerService, r/ExperiencedDevs) and Hacker News (Algolia API) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …).
-2. **Scores** each thread with Claude (Sonnet 4.6): buyer intent, competitors mentioned, whether Typewise was mentioned.
-3. **Drafts** a contextual human-style reply that Typewise's team could post — never auto-posted, always a suggestion for review.
+1. **Scrapes** Reddit (`r/CustomerSuccess`, `r/SaaS`, `r/CustomerService`, `r/ExperiencedDevs`), Hacker News (Algolia API), and DACH RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …).
+2. **Scores** each thread with Claude Haiku 4.5 (tool-use, prompt-cached system prompt): buyer intent, competitors mentioned, whether Typewise was mentioned, relevance score 0–1.
+3. **Drafts** a contextual human-style reply that Typewise's team could post — never auto-posted, always a suggestion for human review.
 4. **Surfaces** everything on a public Streamlit dashboard with the count that matters: *threads this week where Typewise should have been in the conversation*.
+5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) so any dev can evaluate the product from inside Claude Desktop or Cursor — four tools (`compare`, `pricing`, `case_study`, `integration_check`).
 
 ## Why this exists
 
