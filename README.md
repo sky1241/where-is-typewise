@@ -13,13 +13,15 @@ Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.
 
 **[where-is-typewise.streamlit.app](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)** — click to evaluate.
 
+> **Data freshness:** snapshot dated 2026-05-22. The cron pushes refreshed data to the `data/latest` branch; the deployed app serves the snapshot on `main` and requires a manual redeploy to refresh.
+
 ![Dashboard screenshot showing five high-relevance buyer-conversation threads with no Typewise mention, expandable per-thread with Claude-drafted replies ready for human review](docs/dashboard.png)
 
 ## What it does
 
-1. **Scrapes** Hacker News (Algolia API, no auth), Reddit (PRAW, optional), and DACH RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …).
+1. **Scrapes** Hacker News (Algolia API, no auth), Reddit (PRAW, optional), and DACH RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …). *Reddit ingestion is wired (PRAW OAuth, read-only), but the current public snapshot contains HN + DACH only — Reddit credentials are optional.*
 2. **Scores** each thread with Claude Haiku 4.5 — buyer intent (research / comparison / complaint / shopping / irrelevant), competitors mentioned, whether Typewise was mentioned, relevance 0–1.
-3. **Drafts** a contextual human-style reply per thread — a suggestion for human review, never auto-posted.
+3. **Drafts** contextual replies for high-relevance threads (63 of 324 in the current snapshot) — a suggestion for human review, never auto-posted.
 4. **Surfaces** everything on a public Streamlit dashboard with filters by source, locale, intent, and minimum relevance.
 5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) (seven tools — see below) so any dev or growth operator can evaluate AND act on Typewise from inside Claude Desktop or Cursor.
 
@@ -95,7 +97,7 @@ Claude fires four tools in a single turn and returns a buyer-ready brief.
 python -m pytest tests/ -v
 ```
 
-**167 tests passing.** CI runs on every push against Python 3.11 + 3.12.
+**167 tests passing.** Python 3.12 in production, tested in CI on 3.11 and 3.13.
 
 ## What I'd build in month 1 if hired
 
@@ -122,7 +124,7 @@ src/
 
 streamlit_app.py         # entry point Streamlit Community Cloud auto-discovers
 .github/workflows/
-├── tests.yml            # pytest on push, Python 3.11 + 3.12
+├── tests.yml            # pytest on push, Python 3.11 + 3.13
 └── radar.yml            # cron 6h — fetch + score + publish refreshed DB
 ```
 
