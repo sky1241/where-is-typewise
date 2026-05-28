@@ -56,7 +56,7 @@ def estimate(
         "baseline_human_only_monthly_cost_usd": round(baseline_monthly_cost, 2),
         "monthly_savings_usd": round(monthly_savings, 2),
         "annual_savings_usd": round(annual_savings, 2),
-        "roi_multiple_year_one": round(roi_multiple_year_one, 2) if roi_multiple_year_one else None,
+        "roi_multiple_year_one": round(roi_multiple_year_one, 2) if roi_multiple_year_one is not None else None,
         "assumptions_note": (
             "Defaults: 70% AI resolution rate, $6 fully-loaded blended human cost per ticket. "
             "Both are industry-default starting points and should be tuned to the prospect's actual data "
