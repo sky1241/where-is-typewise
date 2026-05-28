@@ -14,6 +14,7 @@ Visual design strictly follows /home/sky/Bureau/bible-ux tokens:
 
 from __future__ import annotations
 
+import html
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -412,6 +413,17 @@ div[data-testid="stExpander"] summary:hover {
 """
 
 
+def _safe_url(url: str) -> str:
+    """Return the URL only if it uses an http(s) scheme, else '#'.
+
+    Scraped content can carry javascript:/data:/vbscript: URLs that would
+    execute when injected into an href via unsafe_allow_html.
+    """
+    if url and url.lower().startswith(("http://", "https://")):
+        return url
+    return "#"
+
+
 def _format_competitors(value):
     if not value:
         return None
@@ -601,7 +613,7 @@ def _render_thread(t: dict) -> None:
     intent = t.get("intent") or "irrelevant"
     flag = _LOCALE_FLAGS.get(locale, "🌐")
 
-    with st.expander(f"{flag}   {title}"):
+    with st.expander(f"{flag}   {html.escape(title)}"):
         source_meta = _SOURCE_BADGES.get(source, {"label": source, "tone": "neutral"})
         intent_meta = _INTENT_BADGES.get(intent, {"label": intent, "tone": "neutral"})
         st.markdown(
@@ -616,14 +628,15 @@ def _render_thread(t: dict) -> None:
         )
 
         comps = _format_competitors(t.get("competitors_mentioned"))
-        comp_html = ", ".join(comps) if comps else "<em>None named</em>"
-        url = t.get("url") or "#"
+        comp_html = ", ".join(html.escape(c) for c in comps) if comps else "<em>None named</em>"
+        safe_url = html.escape(_safe_url(t.get("url") or ""), quote=True)
+        author = html.escape(t.get("author") or "—", quote=True)
         mentioned = "Yes" if t.get("typewise_mentioned") else "No"
         st.markdown(
             f"""
             <dl class="wit-meta">
-                <dt>Link</dt><dd><a href="{url}" target="_blank" rel="noopener">{url}</a></dd>
-                <dt>Author</dt><dd>{t.get("author") or "—"}</dd>
+                <dt>Link</dt><dd><a href="{safe_url}" target="_blank" rel="noopener">{safe_url}</a></dd>
+                <dt>Author</dt><dd>{author}</dd>
                 <dt>Posted</dt><dd>{_format_age(t.get("created_at"))}</dd>
                 <dt>Competitors</dt><dd>{comp_html}</dd>
                 <dt>Typewise mentioned</dt><dd>{mentioned}</dd>
@@ -633,7 +646,7 @@ def _render_thread(t: dict) -> None:
         )
 
         if t.get("body"):
-            body_excerpt = t["body"][:600] + ("…" if len(t["body"]) > 600 else "")
+            body_excerpt = html.escape(t["body"][:600]) + ("…" if len(t["body"]) > 600 else "")
             st.markdown(
                 f'<div class="wit-body">{body_excerpt}</div>',
                 unsafe_allow_html=True,
