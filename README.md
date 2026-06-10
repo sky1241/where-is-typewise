@@ -1,7 +1,7 @@
 # where-is-typewise
 
 [![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
-[![Tests](https://img.shields.io/badge/tests-167%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
+[![Tests](https://img.shields.io/badge/tests-170%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
 
@@ -97,7 +97,7 @@ Claude fires four tools in a single turn and returns a buyer-ready brief.
 python -m pytest tests/ -v
 ```
 
-**167 tests passing.** Python 3.12 in production, tested in CI on 3.11 and 3.13.
+**170 tests passing.** Python 3.12 in production, tested in CI on 3.11 and 3.13.
 
 ## What I'd build in month 1 if hired
 

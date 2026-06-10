@@ -18,6 +18,12 @@ reddit:
 
 hackernews:
   max_results: 50
+  # by_date: rank by recency (/search_by_date) instead of relevance (/search) —
+  # a live radar must surface fresh buyer conversations, not years-old popular posts.
+  by_date: true
+  # since_days: drop stories older than this (Algolia created_at_i filter). Keeps the
+  # radar fresh; the scorer still ranks relevance within the recent window.
+  since_days: 365
 
 dach:
   # Empty keywords list = no filter. DACH RSS feeds are general startup/tech news;

@@ -9,12 +9,16 @@ Returns thread dicts shaped to match the `threads` SQLite schema in src/radar/st
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable
 
 import httpx
 
-_ALGOLIA_URL = "https://hn.algolia.com/api/v1/search"
+# `/search` ranks by Algolia relevance (popular-but-old posts bubble up — bad for a
+# live radar). `/search_by_date` ranks strictly by recency, so we get the freshest
+# buyer conversations first. The scorer downstream still filters on relevance.
+_ALGOLIA_SEARCH_URL = "https://hn.algolia.com/api/v1/search"
+_ALGOLIA_SEARCH_BY_DATE_URL = "https://hn.algolia.com/api/v1/search_by_date"
 _HN_ITEM_URL = "https://news.ycombinator.com/item?id={}"
 _DEFAULT_TIMEOUT = 15.0
 
@@ -63,6 +67,8 @@ def search(
     query: str,
     *,
     max_results: int = 50,
+    by_date: bool = True,
+    since_days: int | None = None,
     client: httpx.Client | None = None,
 ) -> list[dict[str, Any]]:
     """Search HN stories matching `query` via Algolia.
@@ -70,21 +76,29 @@ def search(
     Args:
         query: free-text search terms (Algolia handles tokenization).
         max_results: hitsPerPage cap (Algolia maxes at 1000 but 50 is the project default).
+        by_date: True → `/search_by_date` (freshest first, default — best for a live radar);
+            False → `/search` (relevance-ranked, can surface years-old popular posts).
+        since_days: if set, only return stories newer than this many days
+            (Algolia `numericFilters=created_at_i>cutoff`).
         client: optional pre-configured httpx.Client (lets tests inject a MockTransport).
 
     Returns:
         List of thread dicts in `threads` schema order; unscored fields are None.
     """
-    params = {
+    params: dict[str, Any] = {
         "query": query,
         "tags": "story",
         "hitsPerPage": max(1, min(int(max_results), 1000)),
     }
+    if since_days is not None and since_days > 0:
+        cutoff = int((datetime.now(timezone.utc) - timedelta(days=since_days)).timestamp())
+        params["numericFilters"] = f"created_at_i>{cutoff}"
+    url = _ALGOLIA_SEARCH_BY_DATE_URL if by_date else _ALGOLIA_SEARCH_URL
     owns_client = client is None
     if owns_client:
         client = httpx.Client(timeout=_DEFAULT_TIMEOUT)
     try:
-        resp = client.get(_ALGOLIA_URL, params=params)
+        resp = client.get(url, params=params)
         resp.raise_for_status()
         payload = resp.json()
     finally:
@@ -98,6 +112,8 @@ def search_many(
     queries: Iterable[str],
     *,
     max_per_query: int = 50,
+    by_date: bool = True,
+    since_days: int | None = None,
     client: httpx.Client | None = None,
 ) -> list[dict[str, Any]]:
     """Run `search` for several queries and de-duplicate by thread id (first occurrence wins)."""
@@ -107,7 +123,9 @@ def search_many(
     seen: dict[str, dict[str, Any]] = {}
     try:
         for q in queries:
-            for thread in search(q, max_results=max_per_query, client=client):
+            for thread in search(
+                q, max_results=max_per_query, by_date=by_date, since_days=since_days, client=client
+            ):
                 seen.setdefault(thread["id"], thread)
     finally:
         if owns_client:

@@ -47,11 +47,19 @@ def _fetch_hn(config: dict[str, Any]) -> list[dict[str, Any]]:
     keywords = config.get("keywords") or []
     hn_cfg = config.get("hackernews") or {}
     max_results = int(hn_cfg.get("max_results", 50))
+    by_date = bool(hn_cfg.get("by_date", True))
+    since_days = hn_cfg.get("since_days")
+    since_days = int(since_days) if since_days is not None else None
     if not keywords:
         logger.warning("no keywords in config — skipping HN fetch")
         return []
-    threads = hackernews.search_many(keywords, max_per_query=max_results)
-    logger.info("HN: fetched %d unique threads across %d queries", len(threads), len(keywords))
+    threads = hackernews.search_many(
+        keywords, max_per_query=max_results, by_date=by_date, since_days=since_days
+    )
+    logger.info(
+        "HN: fetched %d unique threads across %d queries (by_date=%s, since_days=%s)",
+        len(threads), len(keywords), by_date, since_days,
+    )
     return threads
 
 
