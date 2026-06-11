@@ -1,19 +1,20 @@
 name: radar-refresh
 
-# Runs the radar pipeline on a schedule and publishes the refreshed SQLite DB
+# Runs the radar pipeline on demand and publishes the refreshed SQLite DB
 # to the `data/latest` branch. Keeps main's history free of binary churn.
+#
+# Deliberately NOT on a cron: each scoring run spends real Anthropic API
+# budget (~$0.50 per 300-thread cycle), so a refresh is an explicit decision
+# from the Actions tab, not a background cost.
 #
 # Streamlit Cloud serves `data/radar.db` from main (the seed). To pick up the
 # refreshed data, either re-deploy the Streamlit app pointing at `data/latest`,
-# or run a separate merge step. See docs/DEPLOY.md § "Scheduled refresh".
+# or run a separate merge step. See docs/DEPLOY.md § "On-demand refresh".
 
 on:
-  schedule:
-    # Every 6 hours at :05 — slightly off the hour to dodge cron contention on GitHub.
-    - cron: '5 */6 * * *'
   workflow_dispatch: {}
 
-# Cron and manual triggers must not race against each other.
+# Overlapping manual triggers must not race against each other.
 concurrency:
   group: radar-refresh
   cancel-in-progress: false
