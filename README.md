@@ -1,7 +1,7 @@
 # where-is-typewise
 
 [![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
-[![Tests](https://img.shields.io/badge/tests-170%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
+[![Tests](https://img.shields.io/badge/tests-173%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
 
@@ -13,7 +13,7 @@ Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.
 
 **[where-is-typewise.streamlit.app](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)** — click to evaluate.
 
-> **Data freshness:** snapshot dated 2026-05-22. The cron pushes refreshed data to the `data/latest` branch; the deployed app serves the snapshot on `main` and requires a manual redeploy to refresh.
+> **Data freshness:** snapshot dated 2026-05-22. The refresh workflow is on-demand rather than scheduled — every scoring run spends real Anthropic API budget (~$0.50 per 300-thread cycle), so refreshes are a deliberate action, not a background cost. Trigger it from the Actions tab (or run the local runner); the deployed app serves the snapshot on `main` and requires a manual redeploy to refresh.
 
 ![Dashboard screenshot showing five high-relevance buyer-conversation threads with no Typewise mention, expandable per-thread with Claude-drafted replies ready for human review](docs/dashboard.png)
 
@@ -97,7 +97,7 @@ Claude fires four tools in a single turn and returns a buyer-ready brief.
 python -m pytest tests/ -v
 ```
 
-**170 tests passing.** Python 3.12 in production, tested in CI on 3.11 and 3.13.
+**173 tests passing.** Python 3.12 on Streamlit Cloud (`runtime.txt`), tested in CI on 3.11 and 3.13.
 
 ## What I'd build in month 1 if hired
 
@@ -125,22 +125,22 @@ src/
 streamlit_app.py         # entry point Streamlit Community Cloud auto-discovers
 .github/workflows/
 ├── tests.yml            # pytest on push, Python 3.11 + 3.13
-└── radar.yml            # cron 6h — fetch + score + publish refreshed DB
+└── radar.yml            # on-demand radar refresh — fetch + score + publish DB
 ```
 
 Schema and tool wiring details: open the source. The repo is small on purpose.
 
 ## Deploy
 
-See [`docs/DEPLOY.md`](docs/DEPLOY.md) for Streamlit Community Cloud setup and the optional GitHub Actions scheduled-refresh wiring.
+See [`docs/DEPLOY.md`](docs/DEPLOY.md) for Streamlit Community Cloud setup and the optional on-demand refresh wiring via GitHub Actions.
 
 ## Bugs found and fixed during the build
 
-See [`BUGS.md`](BUGS.md). Two silent bugs were caught **only** via visual inspection of the deployed dashboard — both are now documented with their root cause and a regression test. Tests can't catch what the user-facing surface silently misrepresents; that pass is part of the build.
+See [`BUGS.md`](BUGS.md). Two silent bugs were caught **only** via visual inspection of the deployed dashboard, and a third — re-fetched threads silently wiping their scores, so every refresh re-billed the full thread set — was caught by reviewing the API bill, not the test suite. All three are documented with root cause and a regression test. Tests can't catch what the user-facing surface (or the invoice) silently misrepresents; that pass is part of the build.
 
 ## Stack
 
-Python 3.12 · MCP SDK · Anthropic SDK (Claude Haiku 4.5, tool-use, prompt caching, exponential-backoff retry) · PRAW · feedparser · httpx · BeautifulSoup · langdetect · SQLite · Streamlit · pytest · GitHub Actions · Streamlit Community Cloud.
+Python 3.12 · MCP SDK · Anthropic SDK (Claude Haiku 4.5, tool-use, exponential-backoff retry) · PRAW · feedparser · httpx · BeautifulSoup · langdetect · SQLite · Streamlit · pytest · GitHub Actions · Streamlit Community Cloud.
 
 ## Ethics
 

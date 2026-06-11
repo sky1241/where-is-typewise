@@ -500,7 +500,7 @@ def main() -> None:
         <div class="wit-hero">
             <span class="wit-eyebrow">📡 Live buyer radar · candidate artifact</span>
             <h1>where-is-typewise</h1>
-            <p>Surfacing the Reddit, Hacker News and DACH RSS conversations where Typewise should have appeared in the discussion — and didn't. Built solo in four hours as the candidate artifact for the Typewise AI Growth Engineer role.</p>
+            <p>Surfacing the Reddit, Hacker News and DACH RSS conversations where Typewise should have appeared in the discussion — and didn't. Built solo in a four-hour initial sprint as the candidate artifact for the Typewise AI Growth Engineer role.</p>
         </div>
         """,
         unsafe_allow_html=True,

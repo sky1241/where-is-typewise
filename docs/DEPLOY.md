@@ -58,9 +58,9 @@ git push
 
 Streamlit Cloud will rebuild and the dashboard will load with the seed visible. Remove the force-add later when the real runner ships data.
 
-**Option B — run the radar in CI on a schedule:**
+**Option B — run the radar in CI on demand:**
 
-GitHub Actions cron → `python -m src.radar.runner` → push the updated DB to a separate `data/latest` branch. Already wired in `.github/workflows/radar.yml` — see [Scheduled refresh](#scheduled-refresh-github-actions) below for the setup steps. For the application packet itself, option A is sufficient; option B is for when you want the public dashboard to keep moving past the seed.
+GitHub Actions `workflow_dispatch` → `python -m src.radar.runner` → push the updated DB to a separate `data/latest` branch. Already wired in `.github/workflows/radar.yml` — see [On-demand refresh](#on-demand-refresh-github-actions) below for the setup steps. For the application packet itself, option A is sufficient; option B is for when you want the public dashboard to keep moving past the seed.
 
 ## Verifying the deploy
 
@@ -80,11 +80,12 @@ If the headline says zero and the table is empty, the demo seed didn't make it i
 | Build hangs at "Installing requirements" | `mcp` SDK still resolving | Wait the full 3 minutes, then retry. The MCP SDK itself isn't needed for the dashboard — could be pruned to a `requirements-dashboard.txt` if it keeps biting. |
 | Slow first load after long idle | Streamlit Community Cloud cold start | Documented behavior. Expect ~30 s on the first load after a long idle. |
 
-## Scheduled refresh (GitHub Actions)
+## On-demand refresh (GitHub Actions)
 
-`.github/workflows/radar.yml` re-runs the radar on a 6-hour cron (and on-demand
-via the **Run workflow** button) so the data behind the dashboard doesn't grow
-stale. Each run does:
+`.github/workflows/radar.yml` re-runs the radar on demand via the **Run
+workflow** button. It is deliberately not on a cron: each scoring run spends
+real Anthropic API budget (see [Costs](#costs)), so refreshing is an explicit
+decision rather than a background expense. Each run does:
 
 1. `python -m src.radar.runner --db data/radar.db --no-reddit -v` (HN + DACH;
    Reddit skipped because CI has no OAuth creds — Anthropic scoring runs iff
@@ -116,8 +117,8 @@ for keeping the dataset fresh even when you don't want to spend on inference.
 ### Triggering a refresh manually
 
 Repo → **Actions** → **radar-refresh** → **Run workflow** → pick `main` →
-**Run**. Useful right after a config or scorer change to verify the next cron
-won't surprise you.
+**Run**. This is the canonical way to refresh; also useful right after a
+config or scorer change to verify nothing surprises you.
 
 ### Wiring the refreshed data into the Streamlit dashboard
 
@@ -141,4 +142,4 @@ For the application packet, option 1 once a day is plenty.
 
 ## Cost
 
-Free tier. The dashboard reads SQLite, no per-request inference. The only cost is on Anthropic for the scorer (~$0.50 per 300-thread cycle at Haiku 4.5 prices). The scheduled workflow at 4×/day = ~$2/day if you always have it on; flip the cron off in the workflow file (or disable the workflow from the Actions tab) to pause.
+Free tier. The dashboard reads SQLite, no per-request inference. The only cost is on Anthropic for the scorer (~$0.50 for a cold 300-thread cycle at Haiku 4.5 prices). Already-scored threads are never re-billed — the runner only scores threads with no score in the DB — so a warm refresh costs cents: you pay per *new* thread, not per run. That incremental-cost property is why the workflow is on-demand instead of a cron: each refresh is a deliberate, priced decision.

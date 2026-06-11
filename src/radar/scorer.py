@@ -1,12 +1,14 @@
 """Score radar threads via Claude — intent / competitors / typewise mention / relevance / draft reply.
 
-Uses Claude Haiku 4.5 by default with prompt caching on a frozen system prompt:
-across a batch of N threads the system block is served from cache (~0.1× input cost)
-after the first call. Anything per-thread (title, body) lives in the user message,
-after the cache breakpoint, so caching stays warm.
+Uses Claude Haiku 4.5 by default. Structured output is forced via tool_use with
+`tool_choice` pinned to `score_thread`, so Claude always returns parseable JSON.
 
-Structured output is forced via tool_use with `tool_choice` pinned to `score_thread`,
-so Claude always returns parseable JSON.
+The frozen system prompt carries a `cache_control` breakpoint and per-thread
+content (title, body) stays in the user message, so the prefix never gets
+invalidated across a batch. Honest caveat: at its current size (~650 tokens)
+the prefix is below Haiku 4.5's 4096-token caching minimum, so the breakpoint
+is forward wiring, not a live saving — it only starts paying once the system
+prompt grows past the minimum.
 """
 
 from __future__ import annotations
