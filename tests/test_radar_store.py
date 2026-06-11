@@ -72,6 +72,29 @@ def test_upsert_is_idempotent(conn):
     assert store.get_thread(conn, "hn:1")["title"] == "v2"
 
 
+def test_refetch_upsert_preserves_existing_scoring(conn):
+    """BUG-003 regression: a re-fetched thread (scoring fields None) must not wipe paid scoring."""
+    store.upsert_thread(conn, _thread())
+    store.update_scoring(
+        conn, "hn:1",
+        intent="research",
+        competitors_mentioned=["Fin"],
+        typewise_mentioned=False,
+        relevance_score=0.9,
+        draft_reply="hi",
+    )
+    store.upsert_thread(conn, _thread(title="refreshed title", fetched_at="2026-05-23T09:00:00+00:00"))
+
+    got = store.get_thread(conn, "hn:1")
+    assert got["title"] == "refreshed title"                    # fetch-owned fields refresh
+    assert got["fetched_at"] == "2026-05-23T09:00:00+00:00"
+    assert got["intent"] == "research"                          # scorer-owned fields survive
+    assert got["competitors_mentioned"] == ["Fin"]
+    assert got["typewise_mentioned"] is False
+    assert got["relevance_score"] == pytest.approx(0.9)
+    assert got["draft_reply"] == "hi"
+
+
 def test_upsert_many_returns_count(conn):
     threads = [_thread(id=f"hn:{i}") for i in range(5)]
     n = store.upsert_many(conn, threads)

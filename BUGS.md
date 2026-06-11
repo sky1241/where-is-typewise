@@ -13,6 +13,16 @@
 - **Regression**: did the fix break anything else?
 -->
 
+## BUG-003: Re-fetched threads silently wiped their scores — every refresh re-billed the full thread set
+
+- **Status**: FIXED
+- **Symptom**: Each radar cycle re-scored (and re-paid) every thread it fetched, even threads already scored in a previous run. On a ~300-thread dataset, every refresh cost a full ~$0.50 cycle instead of the cents that the handful of genuinely new threads should cost. Nothing failed: the dashboard looked right, all tests were green, only the API bill knew.
+- **Root cause**: two compounding issues. (1) `store.upsert_thread` used `INSERT OR REPLACE`, which replaces the *entire* row — re-fetched threads arrive from scrapers with scoring fields set to `None`, so the replace wiped `relevance_score`, `intent`, `draft_reply`, `competitors_mentioned`, and `typewise_mentioned` that a previous (paid) scoring run had written. (2) `runner.run` then sent *all* fetched threads to the scorer without checking what was already scored — consistent with the wiped DB, and ruinous.
+- **Fix**: `upsert_thread` now uses `INSERT ... ON CONFLICT(id) DO UPDATE` with `COALESCE` on the scorer-owned columns, so a re-fetch refreshes fetch-owned fields (title, body, fetched_at, …) without touching paid scoring. `runner.run` filters the batch through `_filter_unscored` and only sends threads whose `relevance_score` is still NULL — already-scored threads are never re-billed.
+- **Test**: `tests/test_radar_store.py::test_refetch_upsert_preserves_existing_scoring`, `tests/test_radar_runner.py::test_run_scores_only_unscored_threads`, `tests/test_radar_runner.py::test_run_skips_scoring_entirely_when_all_threads_scored`.
+- **Regression**: none — `upsert` keeps its insert/refresh semantics for fetch-owned fields (`test_upsert_is_idempotent` still passes unchanged), and a thread upserted *with* explicit scoring values still stores them (COALESCE prefers the incoming non-NULL value).
+- **How it was found**: reviewing the Anthropic API bill, not the test suite. The cost per refresh didn't drop as the dataset matured, which only makes sense if scoring work was being repeated. **Lesson: for systems that spend money per operation, the invoice is a monitoring surface — a metric can look correct while the cost graph proves it isn't.**
+
 ## BUG-002: Dashboard headline metrics zeroed by a 7-day window on real HN data
 
 - **Status**: FIXED

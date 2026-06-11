@@ -99,6 +99,20 @@ def _tag_locales(db_path: Path) -> int:
     return n
 
 
+def _filter_unscored(threads: list[dict[str, Any]], *, db_path: Path) -> list[dict[str, Any]]:
+    """Keep only threads with no relevance_score in the DB yet.
+
+    Scoring is the only paid step of the cycle; re-fetched threads keep their
+    existing score (store upsert COALESCEs scorer-owned columns), so re-scoring
+    them would spend API budget for zero new information."""
+    with store.connect(db_path) as conn:
+        return [
+            t for t in threads
+            if (existing := store.get_thread(conn, t["id"])) is None
+            or existing["relevance_score"] is None
+        ]
+
+
 def _score_and_persist(
     threads: list[dict[str, Any]],
     *,
@@ -144,13 +158,24 @@ def run(
 
     scored = 0
     if use_scoring and all_threads:
-        if Anthropic is None:
+        unscored = _filter_unscored(all_threads, db_path=db_path)
+        if not unscored:
+            logger.info(
+                "All %d fetched threads already scored — skipping scoring entirely",
+                len(all_threads),
+            )
+        elif Anthropic is None:
             logger.warning("anthropic SDK not importable — skipping scoring")
         elif not os.environ.get("ANTHROPIC_API_KEY"):
             logger.warning("ANTHROPIC_API_KEY not set — skipping scoring")
         else:
+            logger.info(
+                "Scoring %d new threads (%d already scored, not re-billed)",
+                len(unscored),
+                len(all_threads) - len(unscored),
+            )
             scored = _score_and_persist(
-                all_threads,
+                unscored,
                 config=config,
                 db_path=db_path,
                 anthropic_client=Anthropic(),

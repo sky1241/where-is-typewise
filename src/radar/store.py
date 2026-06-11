@@ -43,6 +43,11 @@ _COLUMNS = (
     "typewise_mentioned", "relevance_score", "draft_reply",
 )
 
+# Scorer-owned columns: preserved on re-fetch upserts (COALESCE), written by update_scoring.
+_SCORING_COLUMNS = frozenset(
+    {"intent", "competitors_mentioned", "typewise_mentioned", "relevance_score", "draft_reply"}
+)
+
 
 def _ensure_parent(path: Path) -> None:
     if str(path) == ":memory:":
@@ -95,13 +100,27 @@ def connect(path: str | Path = DEFAULT_DB_PATH) -> Iterator[sqlite3.Connection]:
 
 
 def upsert_thread(conn: sqlite3.Connection, thread: dict[str, Any]) -> None:
-    """Insert or replace a single thread row. Idempotent on `id`."""
+    """Insert or update a single thread row. Idempotent on `id`.
+
+    Re-fetched threads arrive from scrapers with scoring fields set to None;
+    the ON CONFLICT clause COALESCEs those columns so a re-fetch refreshes the
+    fetch-owned fields without wiping scoring that already cost an API call
+    (see BUGS.md BUG-003).
+    """
     payload = {col: thread.get(col) for col in _COLUMNS}
     payload["competitors_mentioned"] = _serialize_competitors(payload["competitors_mentioned"])
     tw = payload["typewise_mentioned"]
     payload["typewise_mentioned"] = None if tw is None else int(bool(tw))
     placeholders = ", ".join(f":{c}" for c in _COLUMNS)
-    sql = f"INSERT OR REPLACE INTO threads ({', '.join(_COLUMNS)}) VALUES ({placeholders})"
+    updates = ", ".join(
+        f"{c} = COALESCE(excluded.{c}, threads.{c})" if c in _SCORING_COLUMNS else f"{c} = excluded.{c}"
+        for c in _COLUMNS
+        if c != "id"
+    )
+    sql = (
+        f"INSERT INTO threads ({', '.join(_COLUMNS)}) VALUES ({placeholders}) "
+        f"ON CONFLICT(id) DO UPDATE SET {updates}"
+    )
     conn.execute(sql, payload)
     conn.commit()
 

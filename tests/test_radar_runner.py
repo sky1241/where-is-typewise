@@ -213,6 +213,44 @@ def test_run_scoring_writes_results_to_db(monkeypatch, tmp_db):
         assert row["relevance_score"] == pytest.approx(0.82)
 
 
+def test_run_scores_only_unscored_threads(monkeypatch, tmp_db):
+    """BUG-003 regression: already-scored threads must not be re-sent to the (paid) scorer."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key")
+    threads = [_thread("hn:1"), _thread("hn:2")]
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: threads)
+
+    with store.connect(tmp_db) as conn:
+        store.upsert_thread(conn, _thread("hn:1"))
+        store.update_scoring(conn, "hn:1", intent="research", relevance_score=0.7, draft_reply="x")
+
+    with patch.object(runner.scorer, "score_many", return_value=iter([])) as score_mock, \
+         patch.object(runner, "Anthropic", return_value=MagicMock()):
+        runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_dach=False)
+
+    score_mock.assert_called_once()
+    sent = score_mock.call_args.args[0]
+    assert [t["id"] for t in sent] == ["hn:2"]      # hn:1 already scored, not re-billed
+
+    with store.connect(tmp_db) as conn:             # and its score survived the re-fetch upsert
+        assert store.get_thread(conn, "hn:1")["relevance_score"] == pytest.approx(0.7)
+
+
+def test_run_skips_scoring_entirely_when_all_threads_scored(monkeypatch, tmp_db):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key")
+    monkeypatch.setattr(runner.hackernews, "search_many", lambda *_a, **_kw: [_thread("hn:1")])
+
+    with store.connect(tmp_db) as conn:
+        store.upsert_thread(conn, _thread("hn:1"))
+        store.update_scoring(conn, "hn:1", intent="research", relevance_score=0.7, draft_reply="x")
+
+    with patch.object(runner.scorer, "score_many") as score_mock, \
+         patch.object(runner, "Anthropic", return_value=MagicMock()):
+        summary = runner.run(_minimal_config(), db_path=tmp_db, use_reddit=False, use_dach=False)
+
+    score_mock.assert_not_called()
+    assert summary["scored"] == 0
+
+
 def test_main_cli_returns_zero_and_prints_summary(monkeypatch, tmp_db, capsys, tmp_path):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     cfg_path = tmp_path / "config.yaml"
