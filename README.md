@@ -1,6 +1,6 @@
 # where-is-typewise
 
-[![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
+[![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise.streamlit.app)
 [![Tests](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml/badge.svg)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
@@ -11,7 +11,7 @@ Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.
 
 ## 🔗 Live demo
 
-**[where-is-typewise.streamlit.app](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)** — click to evaluate.
+**[where-is-typewise.streamlit.app](https://where-is-typewise.streamlit.app)** — click to evaluate.
 
 > **Data freshness:** snapshot dated 2026-06-12. The refresh workflow is on-demand rather than scheduled — every scoring run spends real Anthropic API budget (~$0.50 per 300-thread cycle), so refreshes are a deliberate action, not a background cost. Trigger it from the Actions tab (or run the local runner); the deployed app serves the snapshot on `main` and requires a manual redeploy to refresh.
 
