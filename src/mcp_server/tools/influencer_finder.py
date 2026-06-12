@@ -91,8 +91,9 @@ def find(topic: str, *, max_results: int = 3) -> dict:
         (_score_influencer(i, query_tags), -i["audience_size"], i)
         for i in data
     ]
-    scored.sort()  # ascending; negate score and audience so highest sorts last
-    scored.reverse()  # now highest first
+    # Sort on (score, -audience) only — never on the dict itself, which would
+    # raise TypeError the first time two influencers tie on both keys.
+    scored.sort(key=lambda t: (t[0], t[1]), reverse=True)
 
     # Filter out zero-score hits unless they're the only thing we have.
     positive = [s for s in scored if s[0] > 0]

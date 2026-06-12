@@ -58,3 +58,16 @@ def test_estimate_pricing_source_url_present():
 def test_estimate_resolved_count_matches_default_rate(tickets, expected_resolved):
     r = estimate(tickets)
     assert r["resolved_by_ai_monthly"] == expected_resolved
+
+
+def test_estimate_roi_of_exactly_zero_is_returned_not_none():
+    # human cost == AI cost per resolved ticket -> savings 0 -> ROI 0.0, a valid value.
+    r = estimate(10_000, human_cost_per_ticket_usd=1.0)
+    assert r["roi_multiple_year_one"] == 0.0
+    assert r["roi_multiple_year_one"] is not None
+
+
+def test_estimate_rejects_negative_human_cost():
+    r = estimate(10_000, human_cost_per_ticket_usd=-2.0)
+    assert "error" in r
+    assert r["got"] == -2.0

@@ -31,7 +31,7 @@ ANTHROPIC_API_KEY = "sk-ant-..."
 
 # Optional — for live Reddit scraping
 REDDIT_CLIENT_ID     = "..."
-REDDIT_SECRET        = "..."
+REDDIT_CLIENT_SECRET        = "..."
 REDDIT_USER_AGENT    = "where-is-typewise/0.1 by /u/yourusername"
 ```
 
@@ -65,11 +65,11 @@ GitHub Actions `workflow_dispatch` → `python -m src.radar.runner` → push the
 ## Verifying the deploy
 
 1. Visit the app URL
-2. You should see "📡 where-is-typewise" as the H1
-3. Headline metric should show "5 threads this week where Typewise should have been mentioned" (matches the seed data)
-4. Click any thread expander → see the Claude-drafted reply
+2. You should see "where-is-typewise" as the title (radar eyebrow above it)
+3. The "Should have been mentioned" headline metric should show **7** — that matches `data/radar.db` committed on `main` (527-thread snapshot). If you deployed onto an empty DB and ran `src.seed_demo` instead, it shows 5.
+4. Click the first thread expander → see the Claude-drafted "Suggested reply"
 
-If the headline says zero and the table is empty, the demo seed didn't make it into the deployment. Re-check step 5.
+If the headline says zero and the table is empty, the DB didn't make it into the deployment. Re-check step 5. Note: running `src.seed_demo` on top of the committed snapshot ADDS the 8 demo threads to the existing data — only use it on a fresh/empty DB.
 
 ## Troubleshooting
 
@@ -84,7 +84,7 @@ If the headline says zero and the table is empty, the demo seed didn't make it i
 
 `.github/workflows/radar.yml` re-runs the radar on demand via the **Run
 workflow** button. It is deliberately not on a cron: each scoring run spends
-real Anthropic API budget (see [Costs](#costs)), so refreshing is an explicit
+real Anthropic API budget (see [Cost](#cost)), so refreshing is an explicit
 decision rather than a background expense. Each run does:
 
 1. `python -m src.radar.runner --db data/radar.db --no-reddit -v` (HN + DACH;
@@ -127,8 +127,10 @@ Streamlit Community Cloud only deploys from main, so it won't pick up
 
 1. **Periodic manual merge** (zero infrastructure): when you want the
    dashboard to advance, `git fetch origin data/latest && git checkout
-   origin/data/latest -- radar.db && git mv radar.db data/radar.db && git
-   commit -m "data: sync latest" && git push`. Streamlit Cloud auto-rebuilds.
+   origin/data/latest -- radar.db && mv radar.db data/radar.db && git add -f
+   data/radar.db && git commit -m "data: sync latest" && git push`.
+   (`git mv` would refuse: a root-level `radar.db` matches the `*.db`
+   gitignore pattern.) Streamlit Cloud auto-rebuilds.
 2. **Auto-merge PR**: extend the workflow to open a PR on each run with
    `peter-evans/create-pull-request` + auto-merge. Leaves an audit trail in
    PRs but adds noise.

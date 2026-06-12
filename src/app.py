@@ -451,11 +451,11 @@ def _format_age(iso_ts: str | None) -> str:
 
 
 # Headline metric covers everything the radar has indexed, not a fixed time
-# window: HN's Algolia search returns the highest-relevance threads sorted by
-# relevance, not recency, so the top buyer conversations are often months
-# old. A strict "last 7 days" window would silently zero the headline metric
-# for real-world data. Schedule the radar to run frequently, and the dataset
-# stays fresh on its own.
+# window. Freshness is the scraper's job (HN fetch uses /search_by_date with a
+# since_days cutoff), so a second "last 7 days" filter here would double-filter
+# the data and silently zero the headline whenever a scan window is quiet
+# (BUGS.md BUG-002). The headline reflects the indexed dataset; the per-thread
+# age is shown on each row.
 
 
 def _count_mentioned(conn) -> int:
@@ -465,8 +465,9 @@ def _count_mentioned(conn) -> int:
 
 
 def _count_mentioned_recent(conn, *, since_days: int = 30) -> int:
-    """Kept for backward compatibility with the test suite (test_app.py uses
-    since_days=14). The dashboard itself uses _count_mentioned without a window."""
+    """Windowed variant of _count_mentioned, for callers that want a recency
+    cut (e.g. a weekly digest). The dashboard headline deliberately does not
+    use it — see the comment above and BUGS.md BUG-002."""
     cutoff = (datetime.now(timezone.utc) - timedelta(days=since_days)).isoformat(timespec="seconds")
     sql = "SELECT COUNT(*) FROM threads WHERE typewise_mentioned = 1 AND created_at >= ?"
     (n,) = conn.execute(sql, (cutoff,)).fetchone()
@@ -500,7 +501,7 @@ def main() -> None:
         <div class="wit-hero">
             <span class="wit-eyebrow">📡 Live buyer radar · candidate artifact</span>
             <h1>where-is-typewise</h1>
-            <p>Surfacing the Reddit, Hacker News and DACH RSS conversations where Typewise should have appeared in the discussion — and didn't. Built solo in a four-hour initial sprint as the candidate artifact for the Typewise AI Growth Engineer role.</p>
+            <p>Surfacing the Hacker News, DACH RSS (and optionally Reddit) conversations where Typewise should have appeared in the discussion — and didn't. Built solo in a four-hour initial sprint as the candidate artifact for the Typewise AI Growth Engineer role.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -557,7 +558,7 @@ def _render_dashboard(conn) -> None:
 
     col1, col2, col3, col4 = st.columns([1, 1, 1, 1.4])
     source_filter = col1.selectbox("Source", ["(any)", "hn", "reddit", "dach"])
-    locale_filter = col2.selectbox("Locale", ["(any)", "en", "de", "fr", "it"])
+    locale_filter = col2.selectbox("Locale", ["(any)", "en", "de", "fr", "it", "es"])
     intent_filter = col3.selectbox(
         "Intent", ["(any)", "research", "comparison", "complaint", "shopping"]
     )
@@ -616,11 +617,14 @@ def _render_thread(t: dict) -> None:
     with st.expander(f"{flag}   {html.escape(title)}"):
         source_meta = _SOURCE_BADGES.get(source, {"label": source, "tone": "neutral"})
         intent_meta = _INTENT_BADGES.get(intent, {"label": intent, "tone": "neutral"})
+        # Fallback labels come straight from DB values — escape them like everything else.
+        source_label = html.escape(str(source_meta["label"]))
+        intent_label = html.escape(str(intent_meta["label"]))
         st.markdown(
             f"""
             <div class="wit-badge-row">
-                <span class="wit-badge wit-badge--{source_meta['tone']}">{source_meta['label']}</span>
-                <span class="wit-badge wit-badge--{intent_meta['tone']}">{intent_meta['label']}</span>
+                <span class="wit-badge wit-badge--{source_meta['tone']}">{source_label}</span>
+                <span class="wit-badge wit-badge--{intent_meta['tone']}">{intent_label}</span>
                 <span class="wit-score {score_class}">score {score_label}</span>
             </div>
             """,

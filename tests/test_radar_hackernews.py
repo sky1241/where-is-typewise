@@ -56,6 +56,28 @@ def test_search_maps_algolia_hit_to_thread_schema():
     assert t["locale"] is None
 
 
+def test_search_strips_escaped_html_from_body():
+    # Algolia returns story_text as escaped HTML — the stored body must be plain text.
+    hit = {
+        "objectID": "48243325",
+        "title": "Show HN: Plain text please",
+        "author": "demo",
+        "created_at": "2026-05-23T10:00:00.000Z",
+        "story_text": "Letterbook (&lt;a href=&quot;https:&#x2F;&#x2F;letterbook.ai&quot;&gt;https:&#x2F;&#x2F;letterbook.ai&lt;&#x2F;a&gt;) solves tickets.&lt;p&gt;Watch our demo",
+    }
+
+    def responder(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=_algolia_fixture([hit]))
+
+    with _mock_client(responder) as client:
+        threads = hackernews.search("AI customer service", max_results=10, client=client)
+
+    body = threads[0]["body"]
+    assert "&#x2F;" not in body and "&lt;" not in body and "<a " not in body and "<p>" not in body
+    assert "https://letterbook.ai" in body
+    assert "Watch our demo" in body
+
+
 def test_search_synthesizes_hn_item_url_when_missing():
     hit = {"objectID": "999", "title": "Ask HN: tools?", "author": "anon", "created_at": "2026-05-22T00:00:00.000Z"}
 
@@ -132,8 +154,10 @@ def test_live_algolia_smoke():
     """Hits the real Algolia HN endpoint. Skip with RADAR_SKIP_NETWORK=1."""
     try:
         threads = hackernews.search("hacker news", max_results=3)
-    except (httpx.ConnectError, httpx.ReadTimeout, httpx.RequestError) as exc:
-        pytest.skip(f"network unreachable: {exc}")
+    except httpx.HTTPError as exc:
+        # HTTPError covers transport errors AND HTTPStatusError (429/5xx from
+        # raise_for_status) — a rate-limited Algolia must skip, not redden CI.
+        pytest.skip(f"network unreachable or rate-limited: {exc}")
     assert len(threads) >= 1
     t = threads[0]
     assert t["id"].startswith("hn:")

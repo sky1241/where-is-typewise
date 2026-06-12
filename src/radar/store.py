@@ -87,9 +87,7 @@ def connect(path: str | Path = DEFAULT_DB_PATH) -> Iterator[sqlite3.Connection]:
     p = Path(path) if path != ":memory:" else path
     if isinstance(p, Path):
         _ensure_parent(p)
-        conn = sqlite3.connect(p)
-    else:
-        conn = sqlite3.connect(p)
+    conn = sqlite3.connect(p)
     conn.row_factory = sqlite3.Row
     try:
         conn.executescript(_SCHEMA_SQL)

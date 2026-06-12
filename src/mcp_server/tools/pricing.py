@@ -27,6 +27,8 @@ def estimate(
         return {"error": "monthly_tickets must be non-negative", "got": monthly_tickets}
     if not 0.0 <= resolution_rate <= 1.0:
         return {"error": "resolution_rate must be in [0, 1]", "got": resolution_rate}
+    if human_cost_per_ticket_usd < 0:
+        return {"error": "human_cost_per_ticket_usd must be non-negative", "got": human_cost_per_ticket_usd}
 
     resolved = int(monthly_tickets * resolution_rate)
     typewise_monthly_cost = resolved * _TYPEWISE_PRICE_PER_RESOLUTION_USD
@@ -39,8 +41,9 @@ def estimate(
     monthly_savings = baseline_monthly_cost - blended_monthly_cost
     annual_savings = monthly_savings * 12
 
-    if blended_monthly_cost > 0:
-        roi_multiple_year_one = annual_savings / (typewise_monthly_cost * 12) if typewise_monthly_cost > 0 else None
+    # ROI is savings relative to what Typewise costs; undefined when Typewise costs nothing.
+    if typewise_monthly_cost > 0:
+        roi_multiple_year_one = annual_savings / (typewise_monthly_cost * 12)
     else:
         roi_multiple_year_one = None
 

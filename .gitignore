@@ -12,3 +12,11 @@ data/*.json
 .DS_Store
 *.log
 .streamlit/secrets.toml
+
+# The demo DB is shipped intentionally (tracked with git add -f) — see README "Data freshness"
+!data/radar.db
+
+# Local working notes & tooling state — never part of the artifact
+BATTLE_PLAN*.md
+.forge/
+.muninn/

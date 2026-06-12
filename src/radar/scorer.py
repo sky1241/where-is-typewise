@@ -21,7 +21,6 @@ from typing import Any, Iterable, Iterator
 from anthropic import (
     Anthropic,
     APIConnectionError,
-    APIStatusError,
     APITimeoutError,
     InternalServerError,
     RateLimitError,
@@ -37,7 +36,7 @@ _logger = logging.getLogger("radar.scorer")
 _RETRIABLE_EXCEPTIONS = (
     APIConnectionError,
     APITimeoutError,
-    InternalServerError,  # 500, 502, 503, 504
+    InternalServerError,  # any 5xx, including 529 Overloaded (SDK raises it for status >= 500)
     RateLimitError,        # 429
 )
 
@@ -54,7 +53,7 @@ def _build_system(competitors: list[str]) -> str:
     return (
         "You are an analyst classifying buyer-conversation posts from Reddit and "
         "Hacker News for Typewise — a Swiss-based AI customer-service product targeting "
-        "DACH and EU mid-market/enterprise (Galaxus, TUI, IVECO, Brack.ch, Wincasa, Planzer).\n\n"
+        "DACH and EU mid-market/enterprise (Galaxus, DPD, IVECO, Brack.ch, Planzer).\n\n"
         "For each thread you receive, you MUST call the `score_thread` tool exactly once. "
         "Do not respond with prose. The tool input is the full classification.\n\n"
         "Scoring rules:\n"
@@ -228,20 +227,6 @@ def _call_with_retry(api_call, kwargs: dict[str, Any]) -> Any:
                 type(exc).__name__, attempt + 1, _MAX_RETRIES, wait,
             )
             time.sleep(wait)
-        except APIStatusError as exc:
-            # 529 Overloaded isn't a dedicated class in the SDK — check status manually.
-            if getattr(exc, "status_code", None) in (529, 503):
-                last_exc = exc
-                if attempt == _MAX_RETRIES - 1:
-                    break
-                wait = _BASE_BACKOFF_SECONDS * (2 ** attempt) + random.uniform(0, 0.5)
-                _logger.warning(
-                    "Anthropic overload (HTTP %s) on attempt %d/%d — sleeping %.1fs",
-                    exc.status_code, attempt + 1, _MAX_RETRIES, wait,
-                )
-                time.sleep(wait)
-                continue
-            raise
     assert last_exc is not None
     raise last_exc
 
@@ -271,7 +256,9 @@ def score_many(
     competitors: list[str] | None = None,
     on_error: str = "skip",
 ) -> Iterator[tuple[dict[str, Any], dict[str, Any]]]:
-    """Yield (thread, scoring) pairs. Shares one client so the cached system prefix stays warm.
+    """Yield (thread, scoring) pairs. Shares one HTTP client across the batch
+    (connection reuse); prompt caching is server-side and independent of the
+    client instance.
 
     on_error:
         "skip"  — drop threads whose scoring fails (default; runner-friendly)

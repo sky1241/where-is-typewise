@@ -9,10 +9,12 @@ Returns thread dicts shaped to match the `threads` SQLite schema in src/radar/st
 
 from __future__ import annotations
 
+import html
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable
 
 import httpx
+from bs4 import BeautifulSoup
 
 # `/search` ranks by Algolia relevance (popular-but-old posts bubble up — bad for a
 # live radar). `/search_by_date` ranks strictly by recency, so we get the freshest
@@ -38,13 +40,21 @@ def _algolia_created_to_iso(created_at: str | None) -> str | None:
         return created_at
 
 
+def _strip_html(raw: str) -> str:
+    """Algolia returns story_text/comment_text as escaped HTML (&#x2F;, <p>, <a>…).
+    Store plain text so the dashboard and the scorer never see markup."""
+    if not raw:
+        return ""
+    return BeautifulSoup(html.unescape(raw), "html.parser").get_text(separator=" ", strip=True)
+
+
 def _hit_to_thread(hit: dict[str, Any], fetched_at: str) -> dict[str, Any]:
     object_id = str(hit.get("objectID") or "").strip()
     if not object_id:
         raise ValueError(f"hit missing objectID: {hit!r}")
     url = hit.get("url") or _HN_ITEM_URL.format(object_id)
     title = hit.get("title") or hit.get("story_title") or ""
-    body = hit.get("story_text") or hit.get("comment_text") or ""
+    body = _strip_html(hit.get("story_text") or hit.get("comment_text") or "")
     return {
         "id": f"hn:{object_id}",
         "source": "hn",

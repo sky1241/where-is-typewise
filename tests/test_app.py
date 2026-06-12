@@ -85,3 +85,26 @@ def test_count_mentioned_recent_matches_seed(memory_db_with_demo):
     n = app._count_mentioned_recent(memory_db_with_demo, since_days=14)
     # Exactly one demo thread has typewise_mentioned=True.
     assert n == 1
+
+
+# --- BUG-002 regression: headline metrics must not be zeroed by a time window ---
+
+def test_headline_counts_old_hot_threads_without_time_window():
+    """BUG-002: hot threads older than any 7-day window must still drive the headline."""
+    with store.connect(":memory:") as conn:
+        old = (datetime.now(timezone.utc) - timedelta(days=120)).isoformat(timespec="seconds")
+        store.upsert_thread(conn, {
+            "id": "hn:old-hot", "source": "hn", "locale": "en",
+            "url": "https://news.ycombinator.com/item?id=1", "title": "old but hot",
+            "body": "", "author": "a", "created_at": old, "fetched_at": old,
+            "intent": None, "competitors_mentioned": None, "typewise_mentioned": None,
+            "relevance_score": None, "draft_reply": None,
+        })
+        store.update_scoring(conn, "hn:old-hot", intent="shopping",
+                             typewise_mentioned=False, relevance_score=0.9)
+
+        # The dashboard's calls (no window) must see the thread...
+        assert store.count_unmentioned_relevant(conn, min_score=0.7, since_days=None) == 1
+        assert app._count_mentioned(conn) == 0
+        # ...while the old windowed contract would have zeroed it (the bug).
+        assert store.count_unmentioned_relevant(conn, min_score=0.7, since_days=7) == 0

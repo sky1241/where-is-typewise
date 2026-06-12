@@ -88,7 +88,8 @@ def _fetch_dach(config: dict[str, Any]) -> list[dict[str, Any]]:
     feeds = dach_cfg.get("feeds")
     keywords = dach_cfg["keywords"] if "keywords" in dach_cfg else (config.get("keywords") or [])
     threads = dach.fetch_all(feeds=feeds, keywords=keywords)
-    logger.info("DACH: fetched %d threads across %d feeds", len(threads), len(feeds or dach.DEFAULT_FEEDS))
+    feed_count = len(feeds) if feeds is not None else len(dach.DEFAULT_FEEDS)
+    logger.info("DACH: fetched %d threads across %d feeds", len(threads), feed_count)
     return threads
 
 

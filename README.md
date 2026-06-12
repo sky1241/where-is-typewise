@@ -1,7 +1,7 @@
 # where-is-typewise
 
 [![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
-[![Tests](https://img.shields.io/badge/tests-174%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
+[![Tests](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml/badge.svg)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
 
@@ -19,9 +19,9 @@ Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.
 
 ## What it does
 
-1. **Scrapes** Hacker News (Algolia API, no auth), Reddit (PRAW, optional), and DACH RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …). *Reddit ingestion is wired (PRAW OAuth, read-only), but the current public snapshot contains HN + DACH only — Reddit credentials are optional.*
+1. **Scrapes** Hacker News (Algolia API, no auth), Reddit (PRAW, optional), and DACH + EU startup RSS feeds (t3n.de, deutsche-startups.de, siliconcanals.com) for posts matching a keyword list ("AI customer service", "Fin alternative", "Zendesk AI alternative", …). *Reddit ingestion is wired (PRAW OAuth, read-only), but the current public snapshot contains HN + DACH only — Reddit credentials are optional.*
 2. **Scores** each thread with Claude Haiku 4.5 — buyer intent (research / comparison / complaint / shopping / irrelevant), competitors mentioned, whether Typewise was mentioned, relevance 0–1.
-3. **Drafts** contextual replies for high-relevance threads (68 of 527 in the current snapshot) — a suggestion for human review, never auto-posted.
+3. **Drafts** contextual replies for every thread scored ≥ 0.5 relevance (68 of 527 in the current snapshot) — a suggestion for human review, never auto-posted.
 4. **Surfaces** everything on a public Streamlit dashboard with filters by source, locale, intent, and minimum relevance.
 5. **Exposes** Typewise itself as an [MCP server](https://modelcontextprotocol.io) (seven tools — see below) so any dev or growth operator can evaluate AND act on Typewise from inside Claude Desktop or Cursor.
 
@@ -48,7 +48,7 @@ The dashboard boots on the seeded SQLite DB shipped with the repo. To refresh wi
 python -m src.radar.runner --db data/radar.db
 ```
 
-(Without `REDDIT_CLIENT_ID` / `REDDIT_SECRET` the Reddit step is skipped — Hacker News + DACH still run. Without `ANTHROPIC_API_KEY` the scoring is skipped — threads are persisted unscored.)
+(Without `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` the Reddit step is skipped — Hacker News + DACH still run. Without `ANTHROPIC_API_KEY` the scoring is skipped — threads are persisted unscored.)
 
 ## MCP server — 7 tools
 
@@ -97,7 +97,7 @@ Claude fires four tools in a single turn and returns a buyer-ready brief.
 python -m pytest tests/ -v
 ```
 
-**174 tests passing.** Python 3.12 on Streamlit Cloud (`runtime.txt`), tested in CI on 3.11 and 3.13.
+**178 tests passing.** Python 3.12 on Streamlit Cloud (`runtime.txt`), tested in CI on 3.11 and 3.13.
 
 ## What I'd build in month 1 if hired
 
