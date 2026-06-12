@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
 
-A live radar that scans Hacker News, Reddit, and DACH RSS feeds for conversations where customer-service leaders are evaluating AI tools — and surfaces every thread where Typewise should have appeared in the discussion but didn't.
+A live radar that scans Hacker News and DACH + EU startup RSS feeds (Reddit optional) for conversations where customer-service leaders are evaluating AI tools — and surfaces every thread where Typewise should have appeared in the discussion but didn't.
 
 Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.ycombinator.com/companies/typewise/jobs/HmCzfBK-ai-growth-engineer) role.
 
@@ -42,7 +42,7 @@ cp .env.example .env   # add ANTHROPIC_API_KEY; REDDIT_* are optional
 streamlit run streamlit_app.py
 ```
 
-The dashboard boots on the seeded SQLite DB shipped with the repo. To refresh with live data, run the radar:
+The dashboard boots on the committed SQLite snapshot shipped with the repo (527 real scored threads). To refresh with live data, run the radar:
 
 ```bash
 python -m src.radar.runner --db data/radar.db
