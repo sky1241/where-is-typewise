@@ -15,7 +15,7 @@ def test_retail_midmarket_dach_returns_brack():
 
 def test_logistics_enterprise_returns_dpd():
     r = find("logistics", "enterprise")
-    assert r["best_match"]["customer"] == "DPD"
+    assert r["best_match"]["customer"] == "DPD (Switzerland)"
 
 
 def test_freight_aliases_to_logistics():

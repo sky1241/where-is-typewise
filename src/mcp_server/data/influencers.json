@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-05-22",
-    "source": "Public LinkedIn / Twitter / podcast pages, curated during audit. Audience numbers are public estimates and shift quickly.",
-    "warning": "Outreach must be researched and personalised. This dataset is a starting shortlist, not an auto-pilot. Topic tags use a controlled vocabulary so scoring stays deterministic."
+    "last_updated": "2026-06-12",
+    "source": "Public LinkedIn / Twitter / podcast pages, re-verified on 2026-06-12 (profile URLs checked).",
+    "warning": "Outreach must be researched and personalised. This dataset is a starting shortlist, not an auto-pilot. Topic tags use a controlled vocabulary so scoring stays deterministic. audience_size values are rough public estimates used only to break ranking ties — do not quote them."
   },
   "influencers": [
     {
@@ -27,7 +27,7 @@
       "topics_focus": ["customer_experience", "leadership", "cco_role", "books", "speaking"],
       "best_outreach_channel": "linkedin",
       "url": "https://www.linkedin.com/in/jeannebliss/",
-      "notes": "Hosts 'The Human Duct Tape Show' podcast. CCO-level reach. Best fit for an executive-narrative post on CX leadership."
+      "notes": "Hosted 'The Chief Customer Officer Human Duct Tape Show' podcast (2016-era; not her active format). CCO-level reach. Best fit for an executive-narrative post on CX leadership."
     },
     {
       "id": "blake_morgan",
@@ -39,7 +39,7 @@
       "topics_focus": ["customer_experience", "ai", "automation", "future_of_work"],
       "best_outreach_channel": "linkedin",
       "url": "https://blakemichellemorgan.com/",
-      "notes": "Hosts The Modern Customer Podcast. Best fit for an AI-in-CS angle. Responds to LinkedIn DMs with concrete customer stories attached."
+      "notes": "Hosts The Modern Customer Podcast. Best fit for an AI-in-CS angle. Pitch via LinkedIn DM with a concrete customer story attached."
     },
     {
       "id": "bill_staikos",
@@ -75,7 +75,7 @@
       "topics_focus": ["customer_experience", "social_customer_care", "books", "speaking"],
       "best_outreach_channel": "linkedin",
       "url": "https://www.linkedin.com/in/dangingiss/",
-      "notes": "Hosts The Experience Maker podcast. Strong social-customer-care focus. Pitch with a social-channel CS story."
+      "notes": "Hosts The Experience Maker Show (video/YouTube format; his earlier audio podcast was 'Experience This!' with Joey Coleman). Strong social-customer-care focus. Pitch with a social-channel CS story."
     },
     {
       "id": "annette_franz",
@@ -86,7 +86,7 @@
       "channels": ["linkedin", "newsletter", "books", "speaking"],
       "topics_focus": ["customer_experience", "journey_mapping", "voice_of_customer", "books"],
       "best_outreach_channel": "linkedin",
-      "url": "https://www.linkedin.com/in/annettefranz/",
+      "url": "https://www.linkedin.com/in/annette-franz/",
       "notes": "VoC + journey-mapping authority. Pitch when the story has a customer-journey data spine."
     },
     {
@@ -110,7 +110,7 @@
       "channels": ["linkedin", "speaking", "consulting"],
       "topics_focus": ["contact_center", "cs_operations", "automation", "industry_analyst"],
       "best_outreach_channel": "linkedin",
-      "url": "https://www.linkedin.com/in/justinjrobbins/",
+      "url": "https://www.linkedin.com/in/justinmrobbins/",
       "notes": "Contact-centre-industry analyst. Pitch with operational metrics (AHT, deflection, CSAT)."
     },
     {
@@ -122,8 +122,8 @@
       "channels": ["linkedin", "community", "speaking"],
       "topics_focus": ["customer_experience", "community", "cs_leadership", "automation"],
       "best_outreach_channel": "linkedin",
-      "url": "https://www.linkedin.com/in/natebrownci/",
-      "notes": "Co-founder of the CX Accelerator Slack community — one of the canonical CS-buyer pre-qualification spaces. High-leverage."
+      "url": "https://www.linkedin.com/in/cxaccelerator/",
+      "notes": "Co-founder of the CX Accelerator Slack community. Engage genuinely — overt prospecting in that community is frowned upon; relationship first."
     },
     {
       "id": "jeannie_walters",
@@ -140,7 +140,7 @@
     {
       "id": "sarah_guo",
       "name": "Sarah Guo",
-      "role": "Conviction Partners Founder, No Priors Co-host",
+      "role": "Founder of Conviction (VC), No Priors Co-host",
       "audience_size": 130000,
       "primary_channel": "twitter",
       "channels": ["twitter", "linkedin", "podcast", "newsletter"],

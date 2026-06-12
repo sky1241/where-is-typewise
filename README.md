@@ -1,7 +1,7 @@
 # where-is-typewise
 
 [![Live demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://where-is-typewise-knsgq4frwunfgefuxp4w3a.streamlit.app)
-[![Tests](https://img.shields.io/badge/tests-173%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
+[![Tests](https://img.shields.io/badge/tests-174%20passing-22c55e?style=flat-square)](https://github.com/sky1241/where-is-typewise/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.12-3776ab?style=flat-square)](runtime.txt)
 [![License](https://img.shields.io/badge/license-MIT-6c5cf0?style=flat-square)](LICENSE)
 
@@ -27,7 +27,7 @@ Built as a candidate artifact for the [Typewise AI Growth Engineer](https://www.
 
 ## Why this exists
 
-When a CS leader types *"best AI customer service platform"* into Google today, they find Intercom Fin (2 900+ G2 reviews) and Zendesk. They don't find Typewise (29 G2 reviews, no Reddit mentions indexed, last Hacker News post in 2020 on the old keyboard product).
+When a CS leader types *"best AI customer service platform"* into Google today, they find Intercom Fin (≈3 800 G2 reviews) and Zendesk. They don't find Typewise (29 G2 reviews, no Reddit mentions indexed, last Hacker News post in 2020 on the old keyboard product).
 
 The Typewise job posting puts it plainly: *"make CS buyers find Typewise through any creative, non-paid, AI-powered means that work."* This repo is one such means.
 
@@ -87,7 +87,7 @@ python -m src.mcp_server.server
 
 Restart Claude Desktop, then ask:
 
-> *"I'm evaluating Typewise for a 30k-ticket-per-month DACH retailer running Zendesk. Compare them with Fin, estimate ROI, find me the closest case study, and confirm Zendesk integration."*
+> *"I'm evaluating Typewise for a 30k-ticket-per-month DACH retailer running Salesforce. Compare them with Fin, estimate ROI, find me the closest case study, and confirm Salesforce integration."*
 
 Claude fires four tools in a single turn and returns a buyer-ready brief.
 
@@ -97,7 +97,7 @@ Claude fires four tools in a single turn and returns a buyer-ready brief.
 python -m pytest tests/ -v
 ```
 
-**173 tests passing.** Python 3.12 on Streamlit Cloud (`runtime.txt`), tested in CI on 3.11 and 3.13.
+**174 tests passing.** Python 3.12 on Streamlit Cloud (`runtime.txt`), tested in CI on 3.11 and 3.13.
 
 ## What I'd build in month 1 if hired
 

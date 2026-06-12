@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-05-22",
-    "source": "typewise.app/customer-stories + public PR + audit",
-    "warning": "Customer names are public. Specific outcome metrics are sourced from Typewise's own PR; the salesperson should validate during discovery."
+    "last_updated": "2026-06-12",
+    "source": "typewise.app/customer-stories + public PR, re-verified line by line on 2026-06-12",
+    "warning": "Customer names are public (typewise.app/customers). Use-case summaries follow the published customer stories; entries marked 'not publicly documented' have no published story and must be validated in discovery before quoting any detail."
   },
   "case_studies": [
     {
@@ -12,24 +12,24 @@
       "sub_industry": "DACH electronics & general retail",
       "region": "Switzerland / DACH",
       "company_size": "mid_market",
-      "channels": ["email", "chat"],
-      "helpdesk": "Zendesk",
+      "channels": ["email"],
       "languages": ["de", "fr", "it"],
       "url": "https://www.typewise.app/customer-stories/innovating-customer-service-with-ai-for-brack-ch",
-      "headline": "Multilingual EU retailer scales support without growing headcount",
-      "use_case_summary": "Brack.ch routes inbound DACH-language tickets through Typewise's agent assistant layer on top of Zendesk, with autonomous resolution on high-volume intents."
+      "headline": "Swiss multilingual retailer speeds up service responses with AI agent assist",
+      "use_case_summary": "Brack.ch agents use Typewise as an agent-assist layer (browser extension): sentence suggestions accepted with Tab, personalized snippets, multilingual support. The published story stresses that complex requests still need human agents — this is assist, not autonomous resolution."
     },
     {
       "id": "dpd",
-      "customer": "DPD",
+      "customer": "DPD (Switzerland)",
       "industry": "logistics",
       "sub_industry": "parcel delivery",
-      "region": "EU",
+      "region": "Switzerland",
       "company_size": "enterprise",
-      "channels": ["email", "chat"],
-      "languages": ["multilingual EU"],
-      "headline": "EU parcel network handles seasonal surge with AI co-pilot",
-      "use_case_summary": "DPD uses Typewise to absorb peak-season ticket spikes (where-is-my-parcel, delivery rescheduling) without proportional agent hiring."
+      "channels": ["email"],
+      "languages": ["de", "fr", "it", "en"],
+      "url": "https://www.typewise.app/customer-stories/typewise-helps-dpd-achieve-30-boost-in-efficiency-using-ai",
+      "headline": "DPD Switzerland reports ~30% efficiency boost on email responses",
+      "use_case_summary": "DPD Switzerland (customer since 2023) uses Typewise text prediction for customer-service email: sentence completion, templates, autocorrection and language detection across de/fr/it/en, with a reported 20-30% time saving per response."
     },
     {
       "id": "unilever",
@@ -38,22 +38,8 @@
       "sub_industry": "consumer goods, multi-brand",
       "region": "global, EU-anchored",
       "company_size": "enterprise",
-      "channels": ["email", "social"],
-      "languages": ["multilingual"],
-      "headline": "Fortune 500 CPG standardizes consumer response quality across brands",
-      "use_case_summary": "Unilever deploys Typewise for consumer-care responses across brand portfolios, with tone guardrails per-brand."
-    },
-    {
-      "id": "tui_cruises",
-      "customer": "TUI Cruises",
-      "industry": "travel",
-      "sub_industry": "cruise / hospitality",
-      "region": "DACH + EU",
-      "company_size": "enterprise",
-      "channels": ["email", "chat"],
-      "languages": ["de", "en"],
-      "headline": "Travel operator deflects pre-trip questions without losing booking momentum",
-      "use_case_summary": "TUI Cruises uses Typewise to answer pre-booking and pre-departure questions in real time, freeing live agents for booking conversion."
+      "headline": "Fortune 500 CPG listed among Typewise enterprise customers",
+      "use_case_summary": "Unilever is a publicly named Typewise customer. Deployment specifics (channels, brands, languages) are not publicly documented — validate in discovery before quoting details."
     },
     {
       "id": "iveco",
@@ -62,9 +48,10 @@
       "sub_industry": "commercial vehicles / heavy industry",
       "region": "EU",
       "company_size": "enterprise",
-      "channels": ["email"],
-      "headline": "B2B vehicle manufacturer accelerates dealer + fleet support",
-      "use_case_summary": "IVECO uses Typewise to triage dealer and fleet-operator inquiries, including warranty and parts lookup."
+      "channels": ["email", "chat"],
+      "url": "https://www.typewise.app/customer-stories/iveco-accelerates-breakdown-assistance-with-typewise-ai",
+      "headline": "IVECO accelerates breakdown assistance at its Customer Uptime Center",
+      "use_case_summary": "IVECO's Customer Uptime Center (Turin) uses Typewise for breakdown assistance: real-time translation across 10 languages, snippets, and suggestions that recognize product terminology and codes — reported ~25% reduction in manual drafting."
     },
     {
       "id": "beurer",
@@ -73,10 +60,8 @@
       "sub_industry": "consumer health & wellness devices",
       "region": "DACH",
       "company_size": "mid_market_to_enterprise",
-      "channels": ["email"],
-      "languages": ["de", "en", "fr"],
-      "headline": "Consumer-health device maker scales multilingual product support",
-      "use_case_summary": "Beurer uses Typewise for post-purchase device-support inquiries with consistent tone across DACH languages."
+      "headline": "Consumer-health device maker listed among Typewise customers",
+      "use_case_summary": "Beurer is a publicly named Typewise customer (consumer health devices, DACH). Deployment specifics are not publicly documented — validate in discovery."
     },
     {
       "id": "galaxus",
@@ -85,10 +70,8 @@
       "sub_industry": "DACH marketplace / general retail",
       "region": "Switzerland / DACH",
       "company_size": "enterprise",
-      "channels": ["chat", "email"],
-      "languages": ["de", "fr", "it", "en"],
-      "headline": "DACH online retailer maintains quality through 4-language scale",
-      "use_case_summary": "Galaxus handles broad product-category inbound across Switzerland's 4 language regions using Typewise."
+      "headline": "Largest Swiss online retailer listed among Typewise customers",
+      "use_case_summary": "Digitec Galaxus is a publicly named Typewise customer (multilingual Swiss retail). Deployment specifics are not publicly documented — validate in discovery."
     },
     {
       "id": "superhuman",
@@ -99,8 +82,8 @@
       "company_size": "scaleup",
       "channels": ["email"],
       "languages": ["en"],
-      "headline": "B2B SaaS keeps premium-brand response quality at scale",
-      "use_case_summary": "Superhuman uses Typewise to maintain its on-brand response style across high-volume premium support."
+      "headline": "B2B SaaS listed among Typewise customers",
+      "use_case_summary": "Superhuman is a publicly named Typewise customer. Deployment specifics are not publicly documented — validate in discovery."
     },
     {
       "id": "kelag",
@@ -109,10 +92,9 @@
       "sub_industry": "energy provider",
       "region": "Austria",
       "company_size": "enterprise",
-      "channels": ["email", "chat"],
       "languages": ["de"],
-      "headline": "EU energy utility deflects high-volume billing inquiries",
-      "use_case_summary": "Kelag uses Typewise for high-volume meter and billing queries in German."
+      "headline": "Austrian energy utility listed among Typewise customers",
+      "use_case_summary": "Kelag is a publicly named Typewise customer (Austrian utility, German-language service). Deployment specifics are not publicly documented — validate in discovery."
     },
     {
       "id": "planzer",
@@ -122,9 +104,10 @@
       "region": "Switzerland",
       "company_size": "enterprise",
       "channels": ["email"],
-      "languages": ["de", "fr", "it"],
-      "headline": "Swiss freight operator unifies multilingual customer dispatch",
-      "use_case_summary": "Planzer uses Typewise for tracking and dispatch inquiries across all Swiss language regions."
+      "languages": ["en", "de", "fr", "it"],
+      "url": "https://www.typewise.app/customer-stories/increase-customer-satisfaction-with-ai-for-planzer",
+      "headline": "Swiss freight operator lifts service efficiency with AI Communication Assistant",
+      "use_case_summary": "Planzer uses Typewise's AI Communication Assistant for customer service across en/de/fr/it: personalized snippets and response assistance, with a reported ~17% efficiency gain."
     }
   ]
 }

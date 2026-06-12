@@ -1,19 +1,19 @@
 {
   "_meta": {
-    "last_updated": "2026-05-22",
-    "source": "Public podcast pages + audit conducted during artifact build",
-    "warning": "Audience numbers are public estimates and shift quickly. Re-check the show's media kit before a final pitch. Hosts and contact channels are public information; recent_episode_url points to a concrete recent episode at the time of curation."
+    "last_updated": "2026-06-12",
+    "source": "Public podcast pages, re-verified line by line on 2026-06-12 (URLs curl-tested, hosts checked against show pages)",
+    "warning": "Audience numbers are public estimates and shift quickly. Re-check the show's media kit before a final pitch. Where no public guest-submission route exists, the contact_hint says so instead of inventing one."
   },
   "podcasts": {
     "no_priors": {
       "name": "No Priors",
       "host": "Sarah Guo, Elad Gil",
       "focus": "Frontier AI, agent infrastructure, foundation-model startups",
-      "audience_size": "Top-10 tech podcast on Spotify; recurring 50k+ download episodes",
+      "audience_size": "Major tech podcast (Spotify top tech charts); audience estimates are unverified",
       "host_angle": "Sarah pushes deep technical implementation; Elad pushes economics + go-to-market. Both interested in agent orchestration architecture, not generic LLM chat.",
-      "recent_episode_url": "https://www.sierra.ai/resources/podcasts (Bret Taylor episode used as Typewise's positioning anchor)",
-      "contact_hint": "Sarah Guo on X @saranormous; Elad Gil at elad.eladgil.com — pitch via X DM preferred",
-      "recommended_typewise_angle": "Multi-agent orchestration that ships INSIDE existing helpdesks instead of replacing them — the 'augment vs replace' thesis Sierra+Decagon don't credibly play. ETH Zurich co-development gives a deep-tech anchor."
+      "recent_episode_url": "https://www.sierra.ai/resources/podcasts (NOTE: Bret Taylor episode, Ep. 82, Sept 2024 — hosted on Sierra's site; used as a positioning reference, not a recent episode)",
+      "contact_hint": "Sarah Guo on X @saranormous; Elad Gil at eladgil.com — pitch via X DM preferred",
+      "recommended_typewise_angle": "Multi-agent orchestration that ships INSIDE existing helpdesks instead of replacing them — the 'augment vs replace' thesis Sierra+Decagon don't credibly play. Technology co-developed with ETH Zurich researchers gives a deep-tech anchor."
     },
     "the_cx_cast": {
       "name": "The CX Cast",
@@ -22,18 +22,18 @@
       "audience_size": "Forrester analyst audience; B2B enterprise CS leaders",
       "host_angle": "Forrester is data-led: bring research, comparative metrics, named customer outcomes. They distrust pitches without numbers.",
       "recent_episode_url": "https://www.forrester.com/cx-cast/",
-      "contact_hint": "Pitch via Forrester analyst inquiry → CX practice; or direct LinkedIn to a current host (lineup rotates)",
-      "recommended_typewise_angle": "Brack.ch case study: multilingual DACH retail, AI agent on top of Zendesk, deflection metric. EU data residency as enterprise differentiator vs US-hosted Fin/Decagon."
+      "contact_hint": "Forrester-run show — guests are typically Forrester analysts or clients; lowest-friction route is LinkedIn to a current host (lineup rotates)",
+      "recommended_typewise_angle": "Brack.ch story: multilingual Swiss retail, AI agent assist with measured efficiency gains. EU/Swiss hosting available as an enterprise differentiator vs US-default competitors."
     },
     "modern_customer_podcast": {
       "name": "The Modern Customer Podcast",
       "host": "Blake Morgan",
       "focus": "Customer experience trends, AI in CX, future-of-work",
-      "audience_size": "5+ years running, Forbes column synergy, 100k+ monthly LinkedIn reach for the host",
+      "audience_size": "5+ years running; Forbes column synergy",
       "host_angle": "Blake favours examples over abstractions. She wants a customer story with a number attached.",
       "recent_episode_url": "https://blakemichellemorgan.com/podcast/",
-      "contact_hint": "blakemorgan.com pitch form; very responsive on LinkedIn DMs",
-      "recommended_typewise_angle": "How a 200-integration AI agent layer ships inside Zendesk in days, not the 6-month migration timeline of replacement platforms. Lead with Brack.ch or Galaxus."
+      "contact_hint": "LinkedIn DM. Her site is blakemichellemorgan.com — careful: blakemorgan.com is NOT her site.",
+      "recommended_typewise_angle": "How an AI layer with 200+ claimed integrations ships inside the helpdesk you already run, in days — not the 6-month migration timeline of replacement platforms. Lead with Brack.ch (~30% efficiency story at DPD Switzerland as backup)."
     },
     "be_customer_led": {
       "name": "Be Customer Led",
@@ -42,8 +42,8 @@
       "audience_size": "Niche but high signal — CS/CX directors and VPs as listener base",
       "host_angle": "Bill cares about CX ops and tooling decisions. The 'augment, don't replace' framing fits his audience perfectly.",
       "recent_episode_url": "https://www.becustomerled.com/podcast",
-      "contact_hint": "Bill Staikos on LinkedIn (linkedin.com/in/billstaikos), highly responsive to direct pitches",
-      "recommended_typewise_angle": "Why CS directors should add AI as a helpdesk layer (not a rip-and-replace), with EU data residency as the board-defensible compliance angle."
+      "contact_hint": "Bill Staikos on LinkedIn (linkedin.com/in/billstaikos)",
+      "recommended_typewise_angle": "Why CS directors should add AI as a helpdesk layer (not a rip-and-replace), with EU/Swiss hosting as the board-defensible compliance angle."
     },
     "punk_cx": {
       "name": "Punk CX",
@@ -51,19 +51,19 @@
       "focus": "Contrarian CX takes, AI augmentation, anti-incumbent angles",
       "audience_size": "Long-running, established CX-community brand; UK-anchored",
       "host_angle": "Adrian likes provocations. Lead with what's wrong with the current AI-in-CS narrative, then position Typewise as the fix.",
-      "recent_episode_url": "https://www.punk-cx.com/podcast/",
-      "contact_hint": "Adrian Swinscoe on LinkedIn / Twitter @adrianswinscoe",
-      "recommended_typewise_angle": "Contrarian: most AI CS vendors are selling chatbot replacement; Typewise is the layer that respects the helpdesk you already paid for. EU-hosted by design, not as an afterthought."
+      "recent_episode_url": "https://www.punkcx.co.uk (host's hub: adrianswinscoe.com)",
+      "contact_hint": "Adrian Swinscoe on LinkedIn / X @adrianswinscoe",
+      "recommended_typewise_angle": "Contrarian: most AI CS vendors are selling chatbot replacement; Typewise is the layer that respects the helpdesk you already paid for, with EU/Swiss hosting available."
     },
     "support_driven_podcast": {
       "name": "Support Driven Podcast",
-      "host": "Jay Nathan, Andrea Saez (and community guests)",
+      "host": "Community-hosted (Inside Support Driven is hosted by community founder Scott Tran — verify current podcast lineup before pitching)",
       "focus": "Customer support leadership, team operations, tool decisions",
-      "audience_size": "Connected to the Support Driven Slack (10,000+ CS pros) — direct buyer reach",
+      "audience_size": "Connected to the Support Driven community (site claims 30,000+ CS professionals) — direct buyer reach",
       "host_angle": "Practitioners. They want to hear what tooling actually moved an agent's day, not what the marketing deck says.",
-      "recent_episode_url": "https://www.supportdriven.com/podcast",
-      "contact_hint": "Direct LinkedIn to Jay Nathan; or via Support Driven Slack #podcast channel",
-      "recommended_typewise_angle": "Frontline-agent perspective: how an agent assist layer on Zendesk changes the volume per agent per day. Bring an agent (not a marketer) on the episode."
+      "recent_episode_url": "https://supportdriven.com",
+      "contact_hint": "Via the Support Driven community (supportdriven.com) — confirm the current podcast host before any direct pitch",
+      "recommended_typewise_angle": "Frontline-agent perspective: how an agent-assist layer inside the existing helpdesk changes the volume per agent per day. Bring an agent (not a marketer) on the episode."
     },
     "twenty_vc": {
       "name": "20VC",
@@ -72,37 +72,37 @@
       "audience_size": "One of the highest-reach VC podcasts; Fortune 500 / VC LP listener base",
       "host_angle": "Harry likes founder-origin stories with a clean inflection. The B2C-keyboard-to-B2B-agent pivot is exactly the narrative arc that works here.",
       "recent_episode_url": "https://www.thetwentyminutevc.com/",
-      "contact_hint": "Harry Stebbings on X @HarryStebbings, very accessible by DM if pitch is sharp",
-      "recommended_typewise_angle": "Pivot story: B2C Typewise keyboard (2M downloads) → B2B agent platform → 50+ enterprise customers including Unilever / DPD. ETH Zurich research roots. EU deep-tech."
+      "contact_hint": "Harry Stebbings on X @HarryStebbings, accessible by DM if the pitch is sharp",
+      "recommended_typewise_angle": "Pivot story: B2C Typewise keyboard → B2B agent platform → 50+ enterprise customers including Unilever / DPD Switzerland. ETH Zurich research roots. EU deep-tech."
     },
     "saastr_podcast": {
       "name": "SaaStr Podcast",
       "host": "Jason Lemkin",
       "focus": "B2B SaaS scaling, founder-led GTM, ARR milestones",
-      "audience_size": "SaaStr community is the canonical B2B SaaS audience; ~100k podcast subs",
+      "audience_size": "SaaStr community is the canonical B2B SaaS audience",
       "host_angle": "Jason is a numbers guy. Come with ARR trajectory, customer count, NRR, or don't come. Pivot stories also welcomed.",
-      "recent_episode_url": "https://www.saastr.com/category/saastr-podcasts/",
-      "contact_hint": "saastr.com/podcast-pitch form; or LinkedIn DM to Jason Lemkin",
-      "recommended_typewise_angle": "EU-anchored B2B SaaS that wins enterprise without migrating off Salesforce or Zendesk. Public customer logos: Unilever, DPD, TUI, IVECO, Beurer, Galaxus, Brack.ch."
+      "recent_episode_url": "https://www.saastr.com/podcasts/",
+      "contact_hint": "Guest submission form: saastr.com/podcast-guest-submission/ ; or LinkedIn DM to Jason Lemkin",
+      "recommended_typewise_angle": "EU-anchored B2B SaaS that wins enterprise without forcing a platform migration. Public customer logos: Unilever, DPD Switzerland, IVECO, Beurer, Galaxus, Brack.ch."
     },
     "lennys_podcast": {
       "name": "Lenny's Podcast",
       "host": "Lenny Rachitsky",
       "focus": "Product, growth, B2B SaaS — operator interviews",
-      "audience_size": "Top-tier product-management audience; 200k+ newsletter cross-promotion",
-      "host_angle": "Lenny wants operator playbooks, not vision. The Typewise growth angle should be 'how a 20-person company is competing with Sierra/Decagon on a non-paid channel strategy.'",
+      "audience_size": "Top-tier product-management audience; 1,000,000+ newsletter subscribers (per lennysnewsletter.com About page)",
+      "host_angle": "Lenny wants operator playbooks, not vision. The Typewise growth angle should be 'how a ~20-person company is competing with Sierra/Decagon on a non-paid channel strategy.'",
       "recent_episode_url": "https://www.lennysnewsletter.com/podcast",
-      "contact_hint": "Lenny Rachitsky on LinkedIn or via lennysnewsletter.com pitch form",
+      "contact_hint": "Lenny Rachitsky on LinkedIn or X — no public guest-submission form is documented; cold outreach with a sharp operator story",
       "recommended_typewise_angle": "Growth playbook: how non-paid channels (MCP server for devs, founder LinkedIn, DACH community) win against well-funded US competitors. Show the radar."
     },
     "acquired": {
       "name": "Acquired",
       "host": "Ben Gilbert, David Rosenthal",
       "focus": "Long-form company histories, strategy, tech ecosystems",
-      "audience_size": "Top-5 business podcast globally; Fortune 500 + VC + tech-founder reach",
+      "audience_size": "Top-tier business podcast; Fortune 500 + VC + tech-founder reach",
       "host_angle": "They cover scaled companies, not pre-Series-B startups. Pitch only when Typewise has a more public narrative arc (e.g. Series B announced). Useful to watch as a future channel, not today.",
       "recent_episode_url": "https://www.acquired.fm/episodes",
-      "contact_hint": "ben@acquired.fm — but unlikely to land at Typewise's current stage; track for later",
+      "contact_hint": "hello@acquired.fm (published site contact) — but unlikely to land at Typewise's current stage; track for later",
       "recommended_typewise_angle": "Reserved for after a major funding or growth milestone. Today: track and plant the narrative seed (B2C-to-B2B pivot, ETH research, EU enterprise differentiator)."
     }
   }

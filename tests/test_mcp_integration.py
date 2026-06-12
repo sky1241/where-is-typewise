@@ -82,10 +82,10 @@ async def test_case_study_tool_callable_via_mcp_returns_brack_for_dach_retail():
     assert payload["best_match"]["customer"] == "Brack.ch"
 
 
-async def test_integration_check_tool_callable_via_mcp_returns_zendesk_confirmed():
+async def test_integration_check_tool_callable_via_mcp_returns_salesforce_confirmed():
     result = await mcp.call_tool(
         "typewise_integration_check",
-        {"platform": "Zendesk"},
+        {"platform": "Salesforce"},
     )
     payload = _payload(result)
     assert payload["status"] == "confirmed"

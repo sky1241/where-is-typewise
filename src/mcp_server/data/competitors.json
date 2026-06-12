@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-05-22",
-    "source": "public websites + G2 + audit conducted during artifact build",
-    "warning": "This data is curated for demo purposes. Production use should validate against live competitor sites."
+    "last_updated": "2026-06-12",
+    "source": "public websites + G2 + fin.ai/pricing + customer pages, re-verified line by line on 2026-06-12",
+    "warning": "This data is curated for demo purposes. G2 counts and pricing move — validate against live competitor sites before quoting."
   },
   "typewise": {
     "name": "Typewise",
@@ -15,50 +15,53 @@
     "pricing_model": "success-based",
     "starting_price_usd": 1.0,
     "price_unit": "per resolution",
-    "channels": ["chat", "email", "whatsapp", "social"],
-    "voice_status": "roadmap",
+    "channels": ["chat", "email", "whatsapp", "social", "voice", "chatgpt", "claude"],
+    "channels_note": "Homepage channel list verbatim — ChatGPT and Claude are listed as channels (agentic-commerce positioning)",
+    "voice_status": "listed as a channel on the typewise.app homepage",
     "integrations_count_claimed": 200,
-    "data_residency": "EU-hosted",
+    "data_residency": "EU/Switzerland hosting available (security page: EU, Switzerland and/or US depending on client setup)",
     "compliance": ["ISO 27001", "GDPR"],
     "differentiators": [
-      "Sits inside your existing helpdesk (Zendesk/Salesforce/Freshdesk/MS Dynamics) — no rip-and-replace",
+      "Sits inside your existing helpdesk — no rip-and-replace",
       "AI Assistant for agents + autonomous AI Agents in one orchestration layer",
-      "Privacy-first, EU-hosted",
-      "Co-developed with ETH Zurich NLP researchers",
-      "Tone guardrails, multilingual heritage from keyboard product"
+      "EU/Swiss hosting available — strong story for European data-residency requirements",
+      "Co-developed with ETH Zurich researchers",
+      "Multilingual heritage from the keyboard product"
     ],
     "notable_customers": [
-      "Unilever", "DPD", "Beurer", "Galaxus", "TUI Cruises", "IVECO",
-      "Stef", "Superhuman", "Mainova", "Avolta", "Kelag", "Polaris",
-      "Planzer", "Wincasa", "Dialog World", "Brack.ch"
+      "Unilever", "DPD (Switzerland)", "Beurer", "Galaxus", "IVECO",
+      "Superhuman", "Kelag", "Planzer", "Brack.ch"
     ],
-    "buyer_persona_fit": "EU/DACH enterprise (retail, logistics, telecom, utilities) that already runs a major helpdesk and wants AI layered on top, not a chat-first replacement"
+    "buyer_persona_fit": "EU/DACH enterprise (retail, logistics, utilities) that already runs a major helpdesk and wants AI layered on top rather than a platform migration"
   },
   "fin": {
     "name": "Fin by Intercom",
     "url": "https://fin.ai",
-    "g2_reviews": 2900,
+    "g2_reviews": 3800,
+    "g2_reviews_note": "≈3,800 as of 2026-06 (G2 listing; page title still says '2900+')",
     "g2_url": "https://www.g2.com/products/fin-by-intercom/reviews",
-    "pricing_model": "per-resolution",
+    "pricing_model": "per-outcome",
     "starting_price_usd": 0.99,
-    "price_unit": "per resolution",
-    "channels": ["chat", "email", "messengers"],
-    "data_residency": "US (regional options exist)",
+    "price_unit": "per outcome (resolution or completed procedure)",
+    "channels": ["chat", "email", "messengers", "voice"],
+    "voice_status": "live (Fin Voice since 2025, Fin Voice 2 shipped 2026)",
+    "data_residency": "US by default (regional options exist)",
     "differentiators": [
       "Massive G2 footprint and SERP dominance",
-      "Tight Intercom Messenger integration",
+      "Works with the customer's existing helpdesk (fin.ai: 'works seamlessly with any helpdesk') — not Intercom-only",
       "Aggressive SEO on competitor comparison pages"
     ],
     "weaknesses_vs_typewise": [
-      "Chatbot-first — assumes you replace your help desk with Intercom",
-      "Less native fit for teams running Zendesk/Salesforce as system of record",
-      "US-hosted by default, weaker story for EU data residency"
+      "US data residency by default — EU residency is an option, not the default posture",
+      "Per-outcome pricing makes cost scale directly with volume — model the prospect's real resolution mix",
+      "No Swiss-hosted option documented"
     ]
   },
   "decagon": {
     "name": "Decagon",
     "url": "https://decagon.ai",
-    "g2_reviews": null,
+    "g2_reviews": 18,
+    "g2_reviews_note": "18 reviews, 4.9/5 as of 2026-06",
     "valuation_usd": 4500000000,
     "last_round": "Series D Jan 2026 ($250M)",
     "pricing_model": "enterprise contract",
@@ -69,16 +72,15 @@
       "Strong autonomous-agent positioning"
     ],
     "weaknesses_vs_typewise": [
-      "Documented black-box concerns on Reddit",
-      "Single-agent architecture vs Typewise's multi-agent orchestration",
-      "US-focused, weaker DACH/EU enterprise presence"
+      "Black-box criticism circulating in competitor comparison content; Decagon answered publicly with Trace View — expect them to rebut it",
+      "US-anchored go-to-market; no public DACH customer stories as of 2026-06 (note: fresh $250M raise earmarked for expansion)"
     ]
   },
   "sierra": {
     "name": "Sierra (Bret Taylor)",
     "url": "https://sierra.ai",
     "arr_usd": 150000000,
-    "founders": ["Bret Taylor (ex-Salesforce co-CEO, OpenAI board chair)"],
+    "founders": ["Bret Taylor (ex-Salesforce co-CEO, OpenAI board chair)", "Clay Bavor (ex-Google)"],
     "differentiators": [
       "Founder credibility-driven growth, podcast-heavy",
       "40%+ of Fortune 50 customers claimed",
@@ -87,11 +89,11 @@
     "weaknesses_vs_typewise": [
       "Replacement-narrative scares CS leaders watching headcount cuts",
       "Limited SEO/community presence — relies on top-down",
-      "No public DACH customer story"
+      "No public DACH customer story as of 2026-06"
     ]
   },
   "zendesk_ai": {
-    "name": "Zendesk AI / Answer Bot",
+    "name": "Zendesk AI (AI agents / Copilot — formerly Answer Bot)",
     "url": "https://www.zendesk.com/service/ai",
     "differentiators": [
       "Native to Zendesk helpdesk",
@@ -99,7 +101,7 @@
     ],
     "weaknesses_vs_typewise": [
       "Only useful if you're already on Zendesk",
-      "Not best-in-class on agent quality"
+      "Agent quality is debated in the market — but Zendesk acquired Ultimate and is investing heavily, so verify rather than assume"
     ]
   }
 }

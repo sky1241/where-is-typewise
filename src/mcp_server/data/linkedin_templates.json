@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "last_updated": "2026-05-22",
+    "last_updated": "2026-06-12",
     "source": "Templates derived from public LinkedIn patterns observed on founder accounts (Jesse Zhang / Decagon, Bret Taylor / Sierra, Des Traynor / Intercom). Each template is a SCAFFOLD — David or Janis should rewrite in their own voice before posting.",
     "warning": "Templates use placeholders like {customer} and {metric} that must be filled with real values. Posting templates verbatim looks AI-generated; the value is the structure and hook, not the literal text."
   },
@@ -20,7 +20,7 @@
       "topic": "eu_data_residency",
       "label": "EU data residency (DACH / regulated-industry angle)",
       "hook": "Your CS data is your customers' problem reports. Where it lives matters.",
-      "insight": "Half the AI-CS market is US-hosted by default. For an EU enterprise — DACH retail, financial services, healthcare — that's a procurement blocker before the first agent ever runs. Typewise is EU-hosted and ISO 27001 by design, not as a checkbox added in year three. Our customers ({customer}, {customer2}) bought us partly because that conversation with their CISO was 30 minutes, not three months. The data residency question is rarely on the eval rubric publicly, but it kills more deals than any feature gap.",
+      "insight": "Half the AI-CS market is US-hosted by default. For an EU enterprise — DACH retail, financial services, healthcare — that's a procurement blocker before the first agent ever runs. Typewise offers EU and Swiss hosting options and is ISO 27001 certified — the residency answer is architecture, not a roadmap promise. Our customers ({customer}, {customer2}) bought us partly because that conversation with their CISO was 30 minutes, not three months. The data residency question is rarely on the eval rubric publicly, but it kills more deals than any feature gap.",
       "cta": "If your CS-AI shortlist doesn't include the data-residency story for your region, the shortlist is incomplete.",
       "hashtags": ["GDPR", "DataResidency", "EnterpriseAI", "Compliance"],
       "target_audience": "EU CS leaders, procurement, CISOs",
@@ -31,7 +31,7 @@
       "topic": "dach_case_study",
       "label": "DACH customer story (multilingual support at scale)",
       "hook": "DACH retail support is four languages, one helpdesk, zero margin for tone drift.",
-      "insight": "{customer} runs CS in DE / FR / IT / EN across {ticket_volume} tickets/month on Zendesk. They added Typewise as the AI layer six months ago. What changed: {metric_1}. What didn't change: the helpdesk, the macros, the routing rules. The Typewise multi-agent layer handles intent + retrieval + action on top of the system they already operate. Multilingual CS is the hardest variant — and it's where layer-on-helpdesk beats rip-and-replace by the widest margin.",
+      "insight": "{customer} runs CS in DE / FR / IT / EN across {ticket_volume} tickets/month on their existing helpdesk. They added Typewise as the AI layer six months ago. What changed: {metric_1}. What didn't change: the helpdesk, the macros, the routing rules. The Typewise multi-agent layer handles intent + retrieval + action on top of the system they already operate. Multilingual CS is the hardest variant — and it's where layer-on-helpdesk beats rip-and-replace by the widest margin.",
       "cta": "If you operate CS across multiple languages on one helpdesk, the math on a layer architecture is worth re-running.",
       "hashtags": ["DACH", "CustomerExperience", "MultilingualSupport", "AI"],
       "target_audience": "DACH CS directors, EU multi-language operators",
@@ -53,7 +53,7 @@
       "topic": "multi_agent_orchestration",
       "label": "Multi-agent orchestration (deep-tech angle)",
       "hook": "Single-agent CS-AI is a 2024 architecture. The 2026 winners orchestrate.",
-      "insight": "The first wave of AI agents in CS was monolithic: one LLM, one prompt, one response. That works until you hit a ticket that needs to know last week's order history, pull a policy doc, and call a refund endpoint. Now you need agents that specialise: a Supervisor that routes intent, Specialists that resolve domain, Knowledge agents that retrieve, Action agents that execute. Typewise co-developed this orchestration with ETH Zurich AI Center — and we published our chaos-testing rig open-source ({mcp_chaos_rig_url}) so the rest of the industry can stress-test their own multi-agent stacks.",
+      "insight": "The first wave of AI agents in CS was monolithic: one LLM, one prompt, one response. That works until you hit a ticket that needs to know last week's order history, pull a policy doc, and call a refund endpoint. Now you need agents that specialise: a Supervisor that routes intent, Specialists that resolve domain, Knowledge agents that retrieve, Action agents that execute. Typewise's NLP foundations come from years of co-development with ETH Zurich researchers — and on the agent side we published our chaos-testing rig open-source ({mcp_chaos_rig_url}) so the rest of the industry can stress-test their own multi-agent stacks.",
       "cta": "If your CS-AI vendor can't tell you which agent does what in a given resolution, you're buying a black box.",
       "hashtags": ["MultiAgent", "AI", "MCP", "Anthropic"],
       "target_audience": "Technical CS leaders, AI / platform engineers, AI-curious CTOs",

@@ -1,71 +1,70 @@
 {
   "_meta": {
-    "last_updated": "2026-05-22",
-    "source": "typewise.app homepage + customer-stories pages",
-    "warning": "Typewise advertises '200+ deep integrations' but does not publish a full list publicly. This is a curated subset of confirmed and high-likelihood integrations from public material. A sales call should validate any specific platform a buyer requires."
+    "last_updated": "2026-06-12",
+    "source": "typewise.app homepage + customer-stories pages, re-verified line by line on 2026-06-12",
+    "warning": "Typewise advertises '200+ deep integrations' but does not publish a full list publicly. Confirmed entries are backed by a named public source; everything else is covered only by the 200+ claim and must be validated on a sales call."
   },
   "confirmed_native": {
-    "zendesk": {
-      "type": "native_helpdesk",
-      "evidence": "Brack.ch customer story explicitly runs Typewise on top of Zendesk",
-      "docs_hint": "https://typewise.app — search 'Zendesk'"
+    "salesforce": {
+      "type": "helpdesk_crm",
+      "evidence": "Named in the Brack.ch customer story as one of the systems Typewise integrates with",
+      "docs_hint": "https://www.typewise.app/customer-stories/innovating-customer-service-with-ai-for-brack-ch"
     },
-    "chatgpt": {
-      "type": "llm_provider",
-      "evidence": "Homepage lists ChatGPT integration explicitly",
-      "docs_hint": "https://typewise.app"
+    "servicenow": {
+      "type": "service_management",
+      "evidence": "Named in the Brack.ch customer story as one of the systems Typewise integrates with",
+      "docs_hint": "https://www.typewise.app/customer-stories/innovating-customer-service-with-ai-for-brack-ch"
     },
-    "claude": {
-      "type": "llm_provider",
-      "evidence": "Homepage lists Anthropic Claude integration explicitly",
-      "docs_hint": "https://typewise.app"
+    "genesys": {
+      "type": "contact_center",
+      "evidence": "Named in the Brack.ch customer story as one of the systems Typewise integrates with",
+      "docs_hint": "https://www.typewise.app/customer-stories/innovating-customer-service-with-ai-for-brack-ch"
+    },
+    "bsi": {
+      "type": "crm",
+      "evidence": "Named in the Brack.ch customer story; a BSI Software press release documents Brack.ch/Competec running BSI CRM",
+      "docs_hint": "https://www.typewise.app/customer-stories/innovating-customer-service-with-ai-for-brack-ch"
     }
   },
   "channels_native": {
-    "email": "native channel, all plans",
-    "chat": "native channel, all plans",
-    "whatsapp": "native channel, business-tier",
-    "social": "native channel, includes major social inboxes",
-    "voice": "on roadmap, not generally available as of 2026-05-22"
+    "email": "native channel (homepage channel list)",
+    "chat": "native channel (homepage channel list)",
+    "whatsapp": "native channel (homepage channel list)",
+    "social": "native channel (homepage channel list)",
+    "voice": "listed as a channel on the typewise.app homepage",
+    "chatgpt": "listed as a CHANNEL on the homepage — Typewise's agentic-commerce positioning (be present where buyers' AI assistants act), not an LLM-provider statement",
+    "claude": "listed as a CHANNEL on the homepage — same agentic-commerce positioning"
   },
   "high_likelihood_via_200plus_claim": {
-    "salesforce_service_cloud": {
+    "microsoft_dynamics_365": {
       "type": "helpdesk",
-      "confidence": "high",
-      "evidence": "Standard enterprise CS stack; Typewise positions as helpdesk-agnostic layer"
+      "confidence": "low",
+      "evidence": "Covered only by Typewise's public '200+ integrations' claim — no named public evidence. Verify directly."
     },
     "freshdesk": {
       "type": "helpdesk",
-      "confidence": "high",
-      "evidence": "Mentioned in Typewise blog comparison content (freshdesk-fin-typewise-comparaison)"
-    },
-    "microsoft_dynamics_365": {
-      "type": "helpdesk",
-      "confidence": "high",
-      "evidence": "Standard enterprise CRM/service stack"
+      "confidence": "low",
+      "evidence": "Covered only by the '200+ integrations' claim. Note: Typewise blog content treats Freshdesk as a competitor/alternative, not as a documented integration."
     },
     "hubspot_service_hub": {
       "type": "helpdesk",
-      "confidence": "medium",
-      "evidence": "Typewise's competitor-comparison content positions vs HubSpot"
-    },
-    "intercom": {
-      "type": "helpdesk",
-      "confidence": "medium",
-      "evidence": "Sales-led positioning vs Fin assumes co-existence is possible"
+      "confidence": "low",
+      "evidence": "Covered only by the '200+ integrations' claim — no named public evidence. Verify directly."
     },
     "slack": {
       "type": "internal_messaging",
-      "confidence": "medium",
-      "evidence": "Standard for agent-facing collaboration"
+      "confidence": "low",
+      "evidence": "Covered only by the '200+ integrations' claim — no named public evidence."
     },
     "microsoft_teams": {
       "type": "internal_messaging",
-      "confidence": "medium",
-      "evidence": "Standard for enterprise agent collaboration"
+      "confidence": "low",
+      "evidence": "Covered only by the '200+ integrations' claim — no named public evidence."
     }
   },
   "not_supported_or_unknown": {
+    "zendesk": "No public evidence of a native integration. Typewise's own blog treats Zendesk AI as a competitor ('If your organization already relies on Zendesk... Zendesk AI is a logical upgrade'). Ask Typewise directly before assuming compatibility.",
+    "intercom": "Direct competitor (Fin). No public evidence of co-existence as an integration.",
     "discord": "Not advertised. Outside typical enterprise CS scope.",
     "telegram_business": "Not advertised on homepage. Verify with sales."
   }
