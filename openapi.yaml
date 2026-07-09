@@ -1,0 +1,18 @@
+openapi: 3.0.3
+info:
+  title: probe API
+  version: "1.0.0"
+paths:
+  /ping:
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: 'file:///etc/hostname#/'
+components:
+  schemas:
+    Ext:
+      $ref: 'file:///etc/hostname'

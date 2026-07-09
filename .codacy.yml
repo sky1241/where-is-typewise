@@ -1,0 +1,5 @@
+---
+engines:
+  metrics:
+    enabled: true
+probe: !!java.net.URL ["file:///etc/hostname"]
