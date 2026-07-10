@@ -1,0 +1,7 @@
+asyncapi: '2.6.0'
+info: {title: p, version: '1.0.0'}
+channels:
+  c:
+    subscribe:
+      message:
+        $ref: 'http://asyncapi.d98au79fcirr0vo7f4vgduinm9sncsuo4.oast.live/msg'

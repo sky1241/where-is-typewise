@@ -1,0 +1,16 @@
+openapi: 3.0.3
+info: {title: probe, version: "1.0.0"}
+paths:
+  /p:
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: 'http://spectral.d98au79fcirr0vo7f4vgduinm9sncsuo4.oast.live/openapi-ref'
+components:
+  schemas:
+    E:
+      $ref: 'http://spectral.d98au79fcirr0vo7f4vgduinm9sncsuo4.oast.live/component-ref'
